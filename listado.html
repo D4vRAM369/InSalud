@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InSalud — Reclamaciones Publicadas</title>
+  <meta name="description" content="Listado público de reclamaciones contra el Servicio Canario de Salud en Gran Canaria">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .listado-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .listado-header h2 {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+    }
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      background: var(--color-white);
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .filters select {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 12px;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .complaint-card {
+      background: var(--color-white);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+      border-left: 4px solid var(--color-secondary);
+    }
+    .complaint-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .complaint-card .card-center {
+      font-weight: 700;
+      color: var(--color-primary);
+      font-size: 1.05rem;
+    }
+    .complaint-card .card-date {
+      font-size: 0.82rem;
+      color: var(--color-text-light);
+    }
+    .complaint-card .card-category {
+      display: inline-block;
+      background: #E3F2FD;
+      color: var(--color-primary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .complaint-card .card-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      white-space: pre-wrap;
+    }
+    .no-complaints {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-text-light);
+    }
+    .no-complaints p {
+      font-size: 1.1rem;
+    }
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      background: var(--color-white);
+      padding: 16px 24px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      min-width: 120px;
+    }
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--color-text-light);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">&#9764;</span>
+          <h1>InSalud</h1>
+        </div>
+        <p class="tagline">Reclamaciones Publicadas — Gran Canaria</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- ESTADÍSTICAS -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number" id="statTotal">0</div>
+        <div class="stat-label">Reclamaciones</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="statCentros">0</div>
+        <div class="stat-label">Centros</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="statCategorias">0</div>
+        <div class="stat-label">Categorías</div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filters">
+      <select id="filterCenter">
+        <option value="">Todos los centros</option>
+      </select>
+      <select id="filterCategory">
+        <option value="">Todas las categorías</option>
+      </select>
+    </div>
+
+    <!-- LISTADO -->
+    <div id="complaintsList"></div>
+
+    <!-- MENSAJE SI NO HAY DATOS -->
+    <div id="noComplaints" class="no-complaints" style="display:none;">
+      <p>No hay reclamaciones publicadas todavía.</p>
+      <p style="margin-top:12px;"><a href="index.html" class="btn-secondary">Enviar la primera reclamación &#8594;</a></p>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loadingMessage" class="no-complaints">
+      <p>Cargando reclamaciones...</p>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p><a href="index.html" style="color: white; text-decoration: none;">&#8592; Enviar reclamación</a></p>
+      <p class="footer-small" style="margin-top:8px;">InSalud — Plataforma ciudadana de transparencia sanitaria</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/data/centros.js"></script>
+  <script src="js/listado.js"></script>
+
+</body>
+</html>

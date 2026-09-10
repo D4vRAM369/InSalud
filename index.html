@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InSalud — Reclamaciones contra el Servicio Canario de Salud</title>
+  <meta name="description" content="Plataforma ciudadana para reportar problemas con el Servicio Canario de Salud en Gran Canaria">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">&#9764;</span>
+          <h1>InSalud</h1>
+        </div>
+        <p class="tagline">Reclamaciones contra el Servicio Canario de Salud — Gran Canaria</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- INFORMACIÓN -->
+    <section class="info-banner">
+      <h2>&#9888; ¿Tuviste un problema con el SCS?</h2>
+      <p>Reporta tu experiencia de forma <strong>anónima</strong>. Tu reclamación será publicada para visibilizar los problemas del sistema de salud en Gran Canaria.</p>
+    </section>
+
+    <!-- FORMULARIO -->
+    <section class="form-section">
+      <h2>Enviar Reclamación</h2>
+
+      <form id="complaintForm" class="complaint-form" novalidate>
+
+        <!-- Centro de salud -->
+        <div class="form-group">
+          <label for="center">Centro de Salud / Hospital <span class="required">*</span></label>
+          <select id="center" name="center" required>
+            <option value="">Selecciona un centro...</option>
+            <optgroup label="Hospitales">
+              <option value="Hospital Universitario de Gran Canaria Doctor Negrín">Hospital Universitario de Gran Canaria Doctor Negrín</option>
+              <option value="Hospital Universitario Insular de Gran Canaria">Hospital Universitario Insular de Gran Canaria</option>
+              <option value="Hospital Universitario Materno Infantil de Canarias">Hospital Universitario Materno Infantil de Canarias</option>
+              <option value="Hospital San Roque de Güía">Hospital San Roque de Güía</option>
+              <option value="Hospital Universitario de Salud Mental Juan Carlos I">Hospital Universitario de Salud Mental Juan Carlos I</option>
+            </optgroup>
+            <optgroup label="Centros de Salud — Las Palmas de GC">
+              <option value="Centro de Salud Isleta-Puerto (Las Palmas)">Centro de Salud Isleta-Puerto</option>
+              <option value="Centro de Salud Guanarteme (Las Palmas)">Centro de Salud Guanarteme</option>
+              <option value="Centro de Salud Alcaravaneras (Las Palmas)">Centro de Salud Alcaravaneras</option>
+              <option value="Centro de Salud La Isleta (Las Palmas)">Centro de Salud La Isleta</option>
+              <option value="Centro de Salud Vegueta (Las Palmas)">Centro de Salud Vegueta</option>
+              <option value="Centro de Salud La Alameda (Las Palmas)">Centro de Salud La Alameda</option>
+              <option value="Centro de Salud Ciudad Alta (Las Palmas)">Centro de Salud Ciudad Alta</option>
+              <option value="Centro de Salud San Lázaro (Las Palmas)">Centro de Salud San Lázaro</option>
+              <option value="Centro de Salud La Paterna (Las Palmas)">Centro de Salud La Paterna</option>
+              <option value="Centro de Salud Barranco Seco (Las Palmas)">Centro de Salud Barranco Seco</option>
+              <option value="Centro de Salud Tafira (Las Palmas)">Centro de Salud Tafira</option>
+              <option value="Centro de Salud El Sebadal (Las Palmas)">Centro de Salud El Sebadal</option>
+              <option value="Centro de Salud Schamann (Las Palmas)">Centro de Salud Schamann</option>
+              <option value="Centro de Salud La Ballena (Las Palmas)">Centro de Salud La Ballena</option>
+              <option value="Centro de Salud La Castellana (Las Palmas)">Centro de Salud La Castellana</option>
+              <option value="Centro de Salud Tamaraceite (Las Palmas)">Centro de Salud Tamaraceite</option>
+              <option value="Centro de Salud San Lorenzo (Las Palmas)">Centro de Salud San Lorenzo</option>
+              <option value="Centro de Salud Tenoya (Las Palmas)">Centro de Salud Tenoya</option>
+              <option value="Centro de Salud Lomas Blancas (Las Palmas)">Centro de Salud Lomas Blancas</option>
+              <option value="Centro de Salud Las Mesas (Las Palmas)">Centro de Salud Las Mesas</option>
+              <option value="Centro de Salud Las Coloradas (Las Palmas)">Centro de Salud Las Coloradas</option>
+              <option value="Centro de Salud La Minilla (Las Palmas)">Centro de Salud La Minilla</option>
+            </optgroup>
+            <optgroup label="Centros de Salud — Sur de Gran Canaria">
+              <option value="Centro de Salud Telde">Centro de Salud Telde</option>
+              <option value="Centro de Salud Carrizal (Telde)">Centro de Salud Carrizal</option>
+              <option value="Centro de Salud Ausolan (Telde)">Centro de Salud Ausolan</option>
+              <option value="Centro de Salud Santa Lucía de Tirajana">Centro de Salud Santa Lucía de Tirajana</option>
+              <option value="Centro de Salud Vecindario (Santa Lucía)">Centro de Salud Vecindario</option>
+              <option value="Centro de Salud El Pajar (Santa Lucía)">Centro de Salud El Pajar</option>
+              <option value="Centro de Salud San Fernando (San Bartolomé)">Centro de Salud San Fernando</option>
+              <option value="Centro de Salud Playa del Inglés (San Bartolomé)">Centro de Salud Playa del Inglés</option>
+              <option value="Centro de Salud Maspalomas (San Bartolomé)">Centro de Salud Maspalomas</option>
+              <option value="Centro de Salud Fataga (San Bartolomé)">Centro de Salud Fataga</option>
+              <option value="Centro de Salud Mogán">Centro de Salud Mogán</option>
+              <option value="Centro de Salud Puerto Rico (Mogán)">Centro de Salud Puerto Rico</option>
+              <option value="Centro de Salud Puerto de Mogán">Centro de Salud Puerto de Mogán</option>
+              <option value="Centro de Salud Taurito (Mogán)">Centro de Salud Taurito</option>
+              <option value="Centro de Salud Agüimes">Centro de Salud Agüimes</option>
+              <option value="Centro de Salud Cruce de Arinaga (Agüimes)">Centro de Salud Cruce de Arinaga</option>
+              <option value="Centro de Salud Ingenio">Centro de Salud Ingenio</option>
+              <option value="Centro de Salud Culuco (Ingenio)">Centro de Salud Culuco</option>
+              <option value="Centro de Salud Valsequillo">Centro de Salud Valsequillo</option>
+            </optgroup>
+            <optgroup label="Centros de Salud — Norte de Gran Canaria">
+              <option value="Centro de Salud Arucas">Centro de Salud Arucas</option>
+              <option value="Centro de Salud Firgas">Centro de Salud Firgas</option>
+              <option value="Centro de Salud Santa María de Guía">Centro de Salud Santa María de Guía</option>
+              <option value="Centro de Salud Guía">Centro de Salud Güía</option>
+              <option value="Centro de Salud Gáldar">Centro de Salud Gáldar</option>
+              <option value="Centro de Salud Agaete">Centro de Salud Agaete</option>
+              <option value="Centro de Salud Sardina del Norte (Gáldar)">Centro de Salud Sardina del Norte</option>
+            </optgroup>
+            <optgroup label="Centros de Salud — Interior de Gran Canaria">
+              <option value="Centro de Salud Moya">Centro de Salud Moya</option>
+              <option value="Centro de Salud Valleseco">Centro de Salud Valleseco</option>
+              <option value="Centro de Salud Santa Brígida">Centro de Salud Santa Brígida</option>
+              <option value="Centro de Salud Vega de San Mateo">Centro de Salud Vega de San Mateo</option>
+              <option value="Centro de Salud Teror">Centro de Salud Teror</option>
+              <option value="Centro de Salud La Aldea de San Nicolás">Centro de Salud La Aldea de San Nicolás</option>
+              <option value="Centro de Salud Artenara">Centro de Salud Artenara</option>
+              <option value="Centro de Salud Tejeda">Centro de Salud Tejeda</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Categoría -->
+        <div class="form-group">
+          <label for="category">Tipo de Problema <span class="required">*</span></label>
+          <select id="category" name="category" required>
+            <option value="">Selecciona una categoría...</option>
+            <option value="Retrasos y listas de espera">Retrasos y listas de espera</option>
+            <option value="Mala atención médica">Mala atención médica</option>
+            <option value="Falta de medios y recursos">Falta de medios y recursos</option>
+            <option value="Instalaciones en mal estado">Instalaciones en mal estado</option>
+            <option value="Problemas con medicación">Problemas con medicación</option>
+            <option value="Trato del personal">Trato del personal</option>
+            <option value="Problemas administrativos">Problemas administrativos</option>
+            <option value="Falta de información">Falta de información</option>
+            <option value="Citas canceladas o reprogramadas">Citas canceladas o reprogramadas</option>
+            <option value="Urgencias no atendidas">Urgencias no atendidas</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <!-- Fecha del incidente -->
+        <div class="form-group">
+          <label for="incidentDate">Fecha del Incidente <span class="required">*</span></label>
+          <input type="date" id="incidentDate" name="incidentDate" required>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label for="description">Describe tu Experiencia <span class="required">*</span></label>
+          <textarea id="description" name="description" rows="6" required
+            placeholder="Cuéntanos qué pasado. Sé lo más detallado posible..."></textarea>
+          <span class="char-count"><span id="charCount">0</span> / 2000</span>
+        </div>
+
+        <!-- Email opcional -->
+        <div class="form-group">
+          <label for="email">Email (opcional)</label>
+          <input type="email" id="email" name="email"
+            placeholder="Si quieres seguimiento de tu reclamación">
+          <span class="help-text">Solo lo usaremos para contactarte sobre esta reclamación. No se publicará.</span>
+        </div>
+
+        <!-- Adjuntos -->
+        <div class="form-group">
+          <label for="attachments">Adjuntar Fotos o Documentos (opcional)</label>
+          <div class="file-upload" id="fileUploadArea">
+            <input type="file" id="attachments" name="attachments" multiple
+              accept="image/*,.pdf,.doc,.docx" class="file-input">
+            <div class="file-upload-label">
+              <span class="upload-icon">&#128206;</span>
+              <p>Arrastra archivos aquí o <strong>haz clic para seleccionar</strong></p>
+              <p class="help-text">Imágenes (JPG, PNG) o documentos (PDF, DOC). Máximo 5MB por archivo.</p>
+            </div>
+          </div>
+          <div id="fileList" class="file-list"></div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="form-group disclaimer-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="disclaimer" name="disclaimer" required>
+            <span class="checkmark"></span>
+            <span class="disclaimer-text">
+              <strong>&#9888; Importante:</strong> Recuerde remover la información que incluya datos personales,
+              como nombres, apellidos, teléfonos, direcciones, etc. de cualquier reclamación o papel
+              que pueda subir en su caso. Esto protege su privacidad y la de terceros.
+            </span>
+          </label>
+        </div>
+
+        <!-- Botón enviar -->
+        <div class="form-group">
+          <button type="submit" id="submitBtn" class="btn-submit">
+            <span class="btn-text">Enviar Reclamación</span>
+            <span class="btn-loading" style="display:none;">Enviando...</span>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Mensaje de éxito -->
+      <div id="successMessage" class="success-message" style="display:none;">
+        <div class="success-icon">&#10004;</div>
+        <h3>Reclamación Enviada</h3>
+        <p>Tu reclamación ha sido recibida correctamente.</p>
+        <p class="success-detail">Será revisada por nuestro equipo y publicada si cumple las normas.</p>
+        <button onclick="resetForm()" class="btn-secondary">Enviar otra reclamación</button>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div id="errorMessage" class="error-message" style="display:none;">
+        <div class="error-icon">&#10008;</div>
+        <h3>Error al Enviar</h3>
+        <p id="errorText"></p>
+        <button onclick="hideError()" class="btn-secondary">Intentar de nuevo</button>
+      </div>
+
+    </section>
+
+    <!-- ENLACE AL LISTADO -->
+    <section class="cta-section">
+      <h2>Ver Reclamaciones Publicadas</h2>
+      <p>Consulta las reclamaciones que otros ciudadanos han enviado sobre el Servicio Canario de Salud.</p>
+      <a href="listado.html" class="btn-secondary">Ver Listado &#8594;</a>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>InSalud — Plataforma ciudadana de transparencia sanitaria</p>
+      <p class="footer-small">Gran Canaria · Servicio Canario de Salud</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
