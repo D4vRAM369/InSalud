@@ -170,10 +170,14 @@
   <!-- LOGIN -->
   <div id="loginView" class="login-box">
     <h1>&#9764; InSalud Admin</h1>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Contraseña">
-    <button onclick="handleLogin()">Entrar</button>
-    <div id="loginError" class="login-error"></div>
+    <form id="loginForm">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" required>
+      <label for="loginPassword">Contraseña</label>
+      <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="current-password" required>
+      <button id="loginBtn" type="submit">Entrar</button>
+    </form>
+    <div id="loginError" class="login-error" role="alert"></div>
   </div>
 
   <!-- DASHBOARD -->
@@ -204,7 +208,7 @@
     <div id="noData" class="no-data" style="display:none;">No hay reclamaciones</div>
   </div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script>
     // ---- STATE ----
@@ -218,46 +222,72 @@
     const complaintsList = document.getElementById('complaintsList');
     const noData = document.getElementById('noData');
 
-    // ---- CHECK SESSION ----
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      if (session) showDashboard();
+    // Registrar primero el formulario: Enter y click recorren la misma validación.
+    document.getElementById('loginForm').addEventListener('submit', event => {
+      event.preventDefault();
+      handleLogin();
     });
 
-    // ---- LOGIN ----
-    async function handleLogin() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      loginError.style.display = 'none';
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) {
-        loginError.textContent = error.message;
-        loginError.style.display = 'block';
-        return;
-      }
-
-      // Verificar que es admin
-      const { data: profile } = await supabaseClient
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
-
-      if (!profile || profile.role !== 'admin') {
-        loginError.textContent = 'No tienes permisos de administrador.';
-        loginError.style.display = 'block';
-        await supabaseClient.auth.signOut();
-        return;
-      }
-
-      showDashboard();
+    function showLoginError(error) {
+      loginError.textContent = error.message || 'No se pudo conectar con Supabase.';
+      loginError.style.display = 'block';
     }
 
-    // ---- LOGOUT ----
+    async function requireAdmin(user) {
+      const { data: profile, error } = await supabaseClient
+        .from('profiles').select('role').eq('id', user.id).maybeSingle();
+      // Distinguir permisos RLS de contraseña incorrecta facilita diagnosticar.
+      if (error) throw new Error(`No se pudo leer el perfil (RLS): ${error.message}`);
+      if (!profile || profile.role !== 'admin') {
+        await supabaseClient.auth.signOut();
+        throw new Error('No tienes permisos de administrador.');
+      }
+    }
+
+    async function restoreSession() {
+      try {
+        if (!supabaseClient) throw new Error('No se pudo cargar Supabase. Comprueba la conexión y recarga.');
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        // Una sesión existente también necesita comprobar su rol.
+        if (session) {
+          await requireAdmin(session.user);
+          await showDashboard();
+        }
+      } catch (error) { showLoginError(error); }
+    }
+
+    async function handleLogin() {
+      const button = document.getElementById('loginBtn');
+      if (button.disabled) return;
+      button.disabled = true;
+      button.textContent = 'Entrando…';
+      loginError.style.display = 'none';
+      try {
+        if (!supabaseClient) throw new Error('No se pudo cargar Supabase. Comprueba la conexión y recarga.');
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await requireAdmin(data.user);
+        await showDashboard();
+      } catch (error) { showLoginError(error); }
+      finally {
+        button.disabled = false;
+        button.textContent = 'Entrar';
+      }
+    }
+
     async function handleLogout() {
-      await supabaseClient.auth.signOut();
-      loginView.style.display = 'block';
-      dashboardView.style.display = 'none';
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        allComplaints = [];
+        complaintsList.innerHTML = '';
+        loginView.style.display = 'block';
+        dashboardView.style.display = 'none';
+        document.getElementById('loginPassword').value = '';
+      } catch (error) { alert('No se pudo cerrar sesión: ' + error.message); }
     }
 
     // ---- DASHBOARD ----
@@ -340,10 +370,7 @@
     function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function fmtDate(s) { return new Date(s).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }); }
 
-    // Enter para login
-    document.getElementById('loginPassword').addEventListener('keydown', e => {
-      if (e.key === 'Enter') handleLogin();
-    });
+    restoreSession();
   </script>
 </body>
 </html>
