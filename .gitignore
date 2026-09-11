@@ -19,3 +19,7 @@ Thumbs.db
 
 # Vercel
 .vercel/
+
+# Herramientas de estado local
+.omc/
+.omx/
