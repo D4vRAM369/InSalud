@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InSalud — Panel de Administración</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: #1a1a2e; }
+    .admin-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    
+    /* Login */
+    .login-box {
+      background: #16213e;
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 400px;
+      margin: 80px auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .login-box h1 { color: #e94560; font-size: 1.5rem; margin-bottom: 24px; text-align: center; }
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      background: #1a1a2e;
+      color: white;
+      font-size: 1rem;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background: #e94560;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .login-box button:hover { background: #c73650; }
+    .login-error { color: #e74c3c; text-align: center; margin-top: 12px; display: none; }
+
+    /* Dashboard */
+    .dashboard { display: none; }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #333;
+    }
+    .dashboard-header h1 { color: #e94560; font-size: 1.4rem; }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid #e94560;
+      color: #e94560;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Stats */
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 140px;
+      background: #16213e;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stat-card .num { font-size: 2rem; font-weight: 800; color: #e94560; }
+    .stat-card .label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+    /* Filters */
+    .filters-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filters-bar select, .filters-bar button {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #16213e;
+      color: white;
+      font-size: 0.9rem;
+    }
+    .filters-bar button { cursor: pointer; border: none; }
+    .filters-bar button.active { background: #e94560; color: white; }
+    .filters-bar button:not(.active) { background: #16213e; color: #aaa; }
+
+    /* Complaint Cards */
+    .complaint-card {
+      background: #16213e;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 14px;
+      border-left: 4px solid #0f3460;
+    }
+    .complaint-card.pending { border-left-color: #f39c12; }
+    .complaint-card.published { border-left-color: #27ae60; }
+    .complaint-card.rejected { border-left-color: #e74c3c; }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card-center { color: white; font-weight: 700; }
+    .card-date { color: #888; font-size: 0.8rem; }
+    .card-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .badge-pending { background: #f39c12; color: #000; }
+    .badge-published { background: #27ae60; color: white; }
+    .badge-rejected { background: #e74c3c; color: white; }
+    .card-category {
+      display: inline-block;
+      background: #0f3460;
+      color: #4a90d9;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-bottom: 10px;
+      margin-left: 6px;
+    }
+    .card-desc { color: #ccc; line-height: 1.5; margin-bottom: 14px; white-space: pre-wrap; }
+    .card-email { color: #888; font-size: 0.8rem; margin-bottom: 10px; }
+    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-action {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-publish { background: #27ae60; color: white; }
+    .btn-publish:hover { background: #219a52; }
+    .btn-reject { background: #e74c3c; color: white; }
+    .btn-reject:hover { background: #c0392b; }
+    .btn-unpublish { background: #f39c12; color: #000; }
+    .btn-unpublish:hover { background: #e67e22; }
+    .btn-delete { background: #555; color: white; }
+    .btn-delete:hover { background: #333; }
+
+    .no-data { text-align: center; color: #888; padding: 40px; }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="loginView" class="login-box">
+    <h1>&#9764; InSalud Admin</h1>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Contraseña">
+    <button onclick="handleLogin()">Entrar</button>
+    <div id="loginError" class="login-error"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboardView" class="dashboard admin-container">
+    <div class="dashboard-header">
+      <h1>&#9764; InSalud — Admin</h1>
+      <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="statPending">0</div><div class="label">Pendientes</div></div>
+      <div class="stat-card"><div class="num" id="statPublished">0</div><div class="label">Publicadas</div></div>
+      <div class="stat-card"><div class="num" id="statRejected">0</div><div class="label">Rechazadas</div></div>
+      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <button class="active" data-filter="all" onclick="setFilter('all', this)">Todas</button>
+      <button data-filter="pending" onclick="setFilter('pending', this)">Pendientes</button>
+      <button data-filter="published" onclick="setFilter('published', this)">Publicadas</button>
+      <button data-filter="rejected" onclick="setFilter('rejected', this)">Rechazadas</button>
+    </div>
+
+    <!-- List -->
+    <div id="complaintsList"></div>
+    <div id="noData" class="no-data" style="display:none;">No hay reclamaciones</div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script>
+    // ---- STATE ----
+    let allComplaints = [];
+    let currentFilter = 'all';
+
+    // ---- DOM ----
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+    const loginError = document.getElementById('loginError');
+    const complaintsList = document.getElementById('complaintsList');
+    const noData = document.getElementById('noData');
+
+    // ---- CHECK SESSION ----
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (session) showDashboard();
+    });
+
+    // ---- LOGIN ----
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      loginError.style.display = 'none';
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        loginError.textContent = error.message;
+        loginError.style.display = 'block';
+        return;
+      }
+
+      // Verificar que es admin
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (!profile || profile.role !== 'admin') {
+        loginError.textContent = 'No tienes permisos de administrador.';
+        loginError.style.display = 'block';
+        await supabaseClient.auth.signOut();
+        return;
+      }
+
+      showDashboard();
+    }
+
+    // ---- LOGOUT ----
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      loginView.style.display = 'block';
+      dashboardView.style.display = 'none';
+    }
+
+    // ---- DASHBOARD ----
+    async function showDashboard() {
+      loginView.style.display = 'none';
+      dashboardView.style.display = 'block';
+      await loadComplaints();
+    }
+
+    async function loadComplaints() {
+      const { data, error } = await supabaseClient
+        .from('complaints')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) { console.error(error); return; }
+      allComplaints = data || [];
+      updateStats();
+      renderComplaints();
+    }
+
+    function updateStats() {
+      document.getElementById('statPending').textContent = allComplaints.filter(c => c.status === 'pending').length;
+      document.getElementById('statPublished').textContent = allComplaints.filter(c => c.status === 'published').length;
+      document.getElementById('statRejected').textContent = allComplaints.filter(c => c.status === 'rejected').length;
+      document.getElementById('statTotal').textContent = allComplaints.length;
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filters-bar button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderComplaints();
+    }
+
+    function renderComplaints() {
+      const filtered = currentFilter === 'all'
+        ? allComplaints
+        : allComplaints.filter(c => c.status === currentFilter);
+
+      if (filtered.length === 0) {
+        complaintsList.innerHTML = '';
+        noData.style.display = 'block';
+        return;
+      }
+      noData.style.display = 'none';
+
+      complaintsList.innerHTML = filtered.map(c => `
+        <div class="complaint-card ${c.status}">
+          <div class="card-top">
+            <span class="card-center">${esc(c.center)}</span>
+            <span class="card-date">${fmtDate(c.incident_date)} · ${fmtDate(c.created_at)}</span>
+          </div>
+          <span class="card-badge badge-${c.status}">${c.status}</span>
+          <span class="card-category">${esc(c.category)}</span>
+          ${c.email ? `<div class="card-email">&#9993; ${esc(c.email)}</div>` : ''}
+          <div class="card-desc">${esc(c.description)}</div>
+          <div class="card-actions">
+            ${c.status !== 'published' ? `<button class="btn-action btn-publish" onclick="updateStatus('${c.id}','published')">Publicar</button>` : ''}
+            ${c.status !== 'rejected' ? `<button class="btn-action btn-reject" onclick="updateStatus('${c.id}','rejected')">Rechazar</button>` : ''}
+            ${c.status === 'published' ? `<button class="btn-action btn-unpublish" onclick="updateStatus('${c.id}','pending')">Despublicar</button>` : ''}
+            <button class="btn-action btn-delete" onclick="deleteComplaint('${c.id}')">Eliminar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateStatus(id, status) {
+      await supabaseClient.from('complaints').update({ status }).eq('id', id);
+      await loadComplaints();
+    }
+
+    async function deleteComplaint(id) {
+      if (!confirm('¿Eliminar esta reclamación permanentemente?')) return;
+      await supabaseClient.from('attachments').delete().eq('complaint_id', id);
+      await supabaseClient.from('complaints').delete().eq('id', id);
+      await loadComplaints();
+    }
+
+    function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    function fmtDate(s) { return new Date(s).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }); }
+
+    // Enter para login
+    document.getElementById('loginPassword').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</body>
+</html>
