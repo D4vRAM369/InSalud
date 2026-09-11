@@ -89,11 +89,15 @@ function updateStats(complaints) {
 
 function renderCharts(complaints) {
   const chartsSection = document.getElementById('chartsSection');
-  if (complaints.length === 0) {
+  if (typeof Chart === 'undefined' || complaints.length === 0) {
     if (chartsSection) chartsSection.style.display = 'none';
     return;
   }
   if (chartsSection) chartsSection.style.display = 'grid';
+
+  const canvasCenters = document.getElementById('chartCenters');
+  const canvasCats = document.getElementById('chartCategories');
+  if (!canvasCenters?.getContext || !canvasCats?.getContext) return;
 
   // Conteo por centro
   const centerCounts = {};
