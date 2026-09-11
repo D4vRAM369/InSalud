@@ -264,6 +264,48 @@ function hideError() {
   errorMessage.style.display = 'none';
 }
 
+function generateFormalDraft() {
+  const center = document.getElementById('center').value || 'Centro no especificado';
+  const category = document.getElementById('category').value || 'Categoría no especificada';
+  const date = document.getElementById('incident_date').value || 'Fecha no especificada';
+  const description = document.getElementById('description').value || '';
+
+  const draftText = `ESCRITO DE RECLAMACIÓN / QUEJA FORMAL
+--------------------------------------------------
+A LA DIRECCIÓN GERENCIA / SERVICIO DE ATENCIÓN AL PACIENTE
+DEL SERVICIO CANARIO DE SALUD (SCS) / DIPUTADO DEL COMÚN
+
+DATOS DEL CENTRO AFECTADO:
+- Centro / Hospital: ${center}
+- Categoría del problema: ${category}
+- Fecha de la incidencia: ${date}
+
+EXPONE:
+Que el/la abajo firmante (o en representación de paciente afectado), formula reclamación formal en relación con los hechos acaecidos en el centro indicado, manifestando lo siguiente:
+
+${description}
+
+SOLICITA:
+1. Se admita a trámite el presente escrito y se investiguen los hechos expuestos.
+2. Se adopten las medidas correctoras necesarias para evitar que situaciones similares vuelvan a repetirse.
+3. Se de respuesta por escrito a la presente reclamación en los plazos legalmente establecidos.
+
+En Gran Canaria, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
+
+Firma: ___________________________
+`;
+
+  const blob = new Blob([draftText], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Borrador-Reclamacion-Formal-${new Date().toISOString().split('T')[0]}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function resetForm() {
   if (submitting) return;
   pendingSubmission = null;

@@ -5,6 +5,8 @@
 
 // ---- ESTADO ----
 let allComplaints = [];
+let chartCentersInstance = null;
+let chartCategoriesInstance = null;
 
 // ---- ELEMENTOS DEL DOM ----
 const complaintsList = document.getElementById('complaintsList');
@@ -72,7 +74,7 @@ function renderComplaints(complaints) {
   `).join('');
 }
 
-// ---- ACTUALIZAR ESTADÍSTICAS ----
+// ---- ACTUALIZAR ESTADÍSTICAS Y GRÁFICAS ----
 function updateStats(complaints) {
   statTotal.textContent = complaints.length;
 
@@ -81,6 +83,70 @@ function updateStats(complaints) {
 
   const categorias = new Set(complaints.map(c => c.category));
   statCategorias.textContent = categorias.size;
+
+  renderCharts(complaints);
+}
+
+function renderCharts(complaints) {
+  const chartsSection = document.getElementById('chartsSection');
+  if (complaints.length === 0) {
+    if (chartsSection) chartsSection.style.display = 'none';
+    return;
+  }
+  if (chartsSection) chartsSection.style.display = 'grid';
+
+  // Conteo por centro
+  const centerCounts = {};
+  complaints.forEach(c => {
+    centerCounts[c.center] = (centerCounts[c.center] || 0) + 1;
+  });
+  const sortedCenters = Object.entries(centerCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  // Conteo por categoría
+  const catCounts = {};
+  complaints.forEach(c => {
+    catCounts[c.category] = (catCounts[c.category] || 0) + 1;
+  });
+  const sortedCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
+
+  // Gráfica Centros
+  const ctxCenters = document.getElementById('chartCenters').getContext('2d');
+  if (chartCentersInstance) chartCentersInstance.destroy();
+  chartCentersInstance = new Chart(ctxCenters, {
+    type: 'bar',
+    data: {
+      labels: sortedCenters.map(item => item[0].length > 25 ? item[0].substring(0, 25) + '...' : item[0]),
+      datasets: [{
+        label: 'Reclamaciones',
+        data: sortedCenters.map(item => item[1]),
+        backgroundColor: '#1E3A5F',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+  });
+
+  // Gráfica Categorías
+  const ctxCats = document.getElementById('chartCategories').getContext('2d');
+  if (chartCategoriesInstance) chartCategoriesInstance.destroy();
+  chartCategoriesInstance = new Chart(ctxCats, {
+    type: 'doughnut',
+    data: {
+      labels: sortedCats.map(item => item[0]),
+      datasets: [{
+        data: sortedCats.map(item => item[1]),
+        backgroundColor: ['#1E3A5F', '#4A90D9', '#E67E22', '#27AE60', '#E74C3C', '#9B59B6', '#34495E']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+    }
+  });
 }
 
 // ---- POBLAR FILTROS ----

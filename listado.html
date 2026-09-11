@@ -109,6 +109,30 @@
       color: var(--color-text-light);
       margin-top: 4px;
     }
+    .stats-charts {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+    @media (min-width: 640px) {
+      .stats-charts {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .chart-wrapper {
+      background: var(--color-white);
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+    }
+    .chart-wrapper h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -130,18 +154,31 @@
   <main class="container">
 
     <!-- ESTADÍSTICAS -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <div class="stat-number" id="statTotal">0</div>
-        <div class="stat-label">Reclamaciones</div>
+    <div class="stats-container">
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-number" id="statTotal">0</div>
+          <div class="stat-label">Reclamaciones</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statCentros">0</div>
+          <div class="stat-label">Centros</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="statCategorias">0</div>
+          <div class="stat-label">Categorías</div>
+        </div>
       </div>
-      <div class="stat-item">
-        <div class="stat-number" id="statCentros">0</div>
-        <div class="stat-label">Centros</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="statCategorias">0</div>
-        <div class="stat-label">Categorías</div>
+
+      <div class="stats-charts" id="chartsSection" style="display:none;">
+        <div class="chart-wrapper">
+          <h4>Reclamaciones por Centro</h4>
+          <canvas id="chartCenters"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h4>Por Categoría</h4>
+          <canvas id="chartCategories"></canvas>
+        </div>
       </div>
     </div>
 
@@ -180,6 +217,7 @@
   </footer>
 
   <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/data/centros.js"></script>

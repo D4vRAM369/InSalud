@@ -198,10 +198,25 @@
       <!-- Mensaje de éxito -->
       <div id="successMessage" class="success-message" style="display:none;">
         <div class="success-icon">&#10004;</div>
-        <h3>Reclamación Enviada</h3>
-        <p>Tu reclamación ha sido recibida correctamente.</p>
-        <p class="success-detail">Será revisada por nuestro equipo y publicada si cumple las normas.</p>
-        <button onclick="resetForm()" class="btn-secondary">Enviar otra reclamación</button>
+        <h3>¡Tu voz suma al cambio!</h3>
+        <p>Tu reclamación ha sido recibida y se unirá a la evidencia colectiva de Gran Canaria.</p>
+        
+        <div class="success-actions">
+          <div class="action-card">
+            <h4>Paso 1: Visibilizar</h4>
+            <p>Tu caso se sumará a las estadísticas públicas para denunciar el colapso del SCS.</p>
+            <a href="listado.html" class="btn-secondary">Ver Estadísticas y Listado</a>
+          </div>
+          
+          <div class="action-card formal-action">
+            <h4>Paso 2: Acción Formal (Recomendado)</h4>
+            <p>Para que la administración tenga la obligación legal de responderte, te recomendamos presentar una queja formal. Hemos preparado un borrador con tus datos para facilitarte el trámite.</p>
+            <button onclick="generateFormalDraft()" class="btn-accent">Descargar Borrador de Queja Formal</button>
+            <p class="small-hint">Puedes presentarlo en el registro del SCS o ante el Diputado del Común.</p>
+          </div>
+        </div>
+
+        <button onclick="resetForm()" class="btn-text-only" style="margin-top: 20px;">Enviar otra reclamación</button>
       </div>
 
       <!-- Mensaje de error -->
