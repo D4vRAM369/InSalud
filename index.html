@@ -144,8 +144,8 @@
         <!-- Descripción -->
         <div class="form-group">
           <label for="description">Describe tu Experiencia <span class="required">*</span></label>
-          <textarea id="description" name="description" rows="6" required
-            placeholder="Cuéntanos qué pasado. Sé lo más detallado posible..."></textarea>
+          <textarea id="description" name="description" rows="6" required minlength="20" maxlength="2000"
+            placeholder="Cuéntanos qué ha pasado. Sé lo más detallado posible..."></textarea>
           <span class="char-count"><span id="charCount">0</span> / 2000</span>
         </div>
 
@@ -160,13 +160,13 @@
         <!-- Adjuntos -->
         <div class="form-group">
           <label for="attachments">Adjuntar Fotos o Documentos (opcional)</label>
-          <div class="file-upload" id="fileUploadArea">
+          <div class="file-upload" id="fileUploadArea" role="button" tabindex="0" aria-label="Seleccionar archivos adjuntos">
             <input type="file" id="attachments" name="attachments" multiple
-              accept="image/*,.pdf,.doc,.docx" class="file-input">
+              accept="image/jpeg,image/png,image/gif,image/webp,.pdf,.doc,.docx" class="file-input">
             <div class="file-upload-label">
               <span class="upload-icon">&#128206;</span>
               <p>Arrastra archivos aquí o <strong>haz clic para seleccionar</strong></p>
-              <p class="help-text">Imágenes (JPG, PNG) o documentos (PDF, DOC). Máximo 5MB por archivo.</p>
+              <p class="help-text">Imágenes (JPG, PNG) o documentos (PDF, DOC). Máximo 3 archivos, 5 MiB por archivo y 10 MiB en total.</p>
             </div>
           </div>
           <div id="fileList" class="file-list"></div>
