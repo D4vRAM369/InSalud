@@ -25,22 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
 // ---- CARGAR RECLAMACIONES ----
 async function loadComplaints() {
   try {
-    const { data, error } = await supabaseClient
-      .from('complaints')
-      .select('*')
-      .eq('status', 'published')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    allComplaints = data || [];
+    if (!supabaseClient) throw new Error('No se pudo cargar Supabase.');
+    const rows = [];
+    // La vista pública omite emails; no basta con ocultarlos en las tarjetas.
+    for (let offset = 0; ; offset += 500) {
+      const { data, error } = await supabaseClient.from('public_complaints')
+        .select('id,center,category,incident_date,description,created_at')
+        .order('created_at', { ascending: false }).order('id').range(offset, offset + 499);
+      if (error) throw error;
+      rows.push(...data);
+      if (data.length < 500) break;
+    }
+    allComplaints = rows;
     renderComplaints(allComplaints);
     updateStats(allComplaints);
     populateFilters(allComplaints);
 
   } catch (error) {
     console.error('Error cargando reclamaciones:', error);
-    loadingMessage.innerHTML = '<p>Error al cargar las reclamaciones.</p>';
+    loadingMessage.textContent = 'No se pudieron cargar las reclamaciones. Comprueba la conexión y recarga.';
+    loadingMessage.style.display = 'block';
   }
 }
 
@@ -81,6 +85,9 @@ function updateStats(complaints) {
 
 // ---- POBLAR FILTROS ----
 function populateFilters(complaints) {
+  // Limpiar opciones evita duplicados al volver a cargar.
+  filterCenter.length = 1;
+  filterCategory.length = 1;
   // Centros únicos
   const centros = [...new Set(complaints.map(c => c.center))].sort();
   centros.forEach(center => {
@@ -133,5 +140,5 @@ function escapeHtml(text) {
 
 function formatDate(dateString) {
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString('es-ES', options);
+  return new Date(dateString + 'T12:00:00').toLocaleDateString('es-ES', options);
 }
