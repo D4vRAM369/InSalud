@@ -204,6 +204,7 @@
     </div>
 
     <!-- List -->
+    <div id="adminError" role="alert" style="color:#ffb4b4;"></div>
     <div id="complaintsList"></div>
     <div id="noData" class="no-data" style="display:none;">No hay reclamaciones</div>
   </div>
@@ -294,17 +295,23 @@
     async function showDashboard() {
       loginView.style.display = 'none';
       dashboardView.style.display = 'block';
-      await loadComplaints();
+      try { await loadComplaints(); }
+      catch (error) { document.getElementById('adminError').textContent = error.message; }
     }
 
     async function loadComplaints() {
-      const { data, error } = await supabaseClient
-        .from('complaints')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) { console.error(error); return; }
-      allComplaints = data || [];
+      document.getElementById('adminError').textContent = '';
+      // PostgREST limita filas por respuesta; paginar evita estadísticas incompletas.
+      const rows = [];
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await supabaseClient.from('complaints')
+          .select('*').order('created_at', { ascending: false }).order('id')
+          .range(offset, offset + 499);
+        if (error) throw error;
+        rows.push(...data);
+        if (data.length < 500) break;
+      }
+      allComplaints = rows;
       updateStats();
       renderComplaints();
     }
@@ -336,39 +343,112 @@
       noData.style.display = 'none';
 
       complaintsList.innerHTML = filtered.map(c => `
-        <div class="complaint-card ${c.status}">
+        <div class="complaint-card ${esc(c.status)}">
           <div class="card-top">
             <span class="card-center">${esc(c.center)}</span>
             <span class="card-date">${fmtDate(c.incident_date)} · ${fmtDate(c.created_at)}</span>
           </div>
-          <span class="card-badge badge-${c.status}">${c.status}</span>
+          <span class="card-badge badge-${esc(c.status)}">${esc(c.status)}</span>
           <span class="card-category">${esc(c.category)}</span>
           ${c.email ? `<div class="card-email">&#9993; ${esc(c.email)}</div>` : ''}
           <div class="card-desc">${esc(c.description)}</div>
           <div class="card-actions">
-            ${c.status !== 'published' ? `<button class="btn-action btn-publish" onclick="updateStatus('${c.id}','published')">Publicar</button>` : ''}
-            ${c.status !== 'rejected' ? `<button class="btn-action btn-reject" onclick="updateStatus('${c.id}','rejected')">Rechazar</button>` : ''}
-            ${c.status === 'published' ? `<button class="btn-action btn-unpublish" onclick="updateStatus('${c.id}','pending')">Despublicar</button>` : ''}
-            <button class="btn-action btn-delete" onclick="deleteComplaint('${c.id}')">Eliminar</button>
+            <button class="btn-action" data-action="attachments" data-id="${esc(c.id)}">Ver adjuntos</button>
+            ${c.status !== 'published' ? `<button class="btn-action btn-publish" data-action="published" data-id="${esc(c.id)}">Publicar</button>` : ''}
+            ${c.status !== 'rejected' ? `<button class="btn-action btn-reject" data-action="rejected" data-id="${esc(c.id)}">Rechazar</button>` : ''}
+            ${c.status === 'published' ? `<button class="btn-action btn-unpublish" data-action="pending" data-id="${esc(c.id)}">Despublicar</button>` : ''}
+            <button class="btn-action btn-delete" data-action="delete" data-id="${esc(c.id)}">Eliminar</button>
           </div>
         </div>
       `).join('');
     }
 
+    // Los datos no entran en código onclick: evita mezclar texto y JavaScript.
+    complaintsList.addEventListener('click', async event => {
+      const button = event.target.closest('button[data-id]');
+      if (!button || button.disabled) return;
+      button.disabled = true;
+      document.getElementById('adminError').textContent = '';
+      try {
+        const { id, action } = button.dataset;
+        if (action === 'delete') await deleteComplaint(id);
+        else if (action === 'attachments') await showAttachments(id, button);
+        else await updateStatus(id, action);
+      } catch (error) {
+        document.getElementById('adminError').textContent = error.message;
+      } finally { button.disabled = false; }
+    });
+
     async function updateStatus(id, status) {
-      await supabaseClient.from('complaints').update({ status }).eq('id', id);
+      if (!['published', 'pending', 'rejected'].includes(status)) throw new Error('Estado no válido.');
+      // SELECT permite detectar permisos denegados que actualizan cero filas sin error.
+      const { data, error } = await supabaseClient.from('complaints')
+        .update({ status }).eq('id', id).select('id');
+      if (error) throw error;
+      if (!data.length) throw new Error('No se actualizó la reclamación. Revisa permisos o recarga.');
       await loadComplaints();
+    }
+
+    function attachmentPath(value) {
+      // Compatibilidad con URLs antiguas: solo aceptar objetos de nuestro bucket.
+      const prefix = SUPABASE_URL + '/storage/v1/object/public/complaint-attachments/';
+      const path = value.startsWith(prefix) ? decodeURIComponent(value.slice(prefix.length)) : value;
+      if (!path.startsWith('complaints/') || path.includes('..') || path.includes('://')) {
+        throw new Error('Ruta de adjunto no válida.');
+      }
+      return path;
+    }
+
+    async function showAttachments(id, button) {
+      const { data, error } = await supabaseClient.from('attachments')
+        .select('file_url').eq('complaint_id', id);
+      if (error) throw error;
+      const list = document.createElement('div');
+      for (const [index, attachment] of data.entries()) {
+        const { data: signed, error: signError } = await supabaseClient.storage
+          .from('complaint-attachments').createSignedUrl(attachmentPath(attachment.file_url), 60);
+        if (signError) throw signError;
+        const link = document.createElement('a');
+        link.href = signed.signedUrl;
+        link.textContent = `Adjunto ${index + 1} (enlace válido 60 s) `;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        list.appendChild(link);
+      }
+      if (!data.length) list.textContent = 'Sin adjuntos.';
+      const old = button.parentElement.querySelector('.attachment-links');
+      if (old) old.remove();
+      list.className = 'attachment-links';
+      button.parentElement.appendChild(list);
     }
 
     async function deleteComplaint(id) {
-      if (!confirm('¿Eliminar esta reclamación permanentemente?')) return;
-      await supabaseClient.from('attachments').delete().eq('complaint_id', id);
-      await supabaseClient.from('complaints').delete().eq('id', id);
+      if (!confirm('¿Eliminar esta reclamación y sus adjuntos permanentemente?')) return;
+      const { data: attachments, error: readError } = await supabaseClient
+        .from('attachments').select('file_url').eq('complaint_id', id);
+      if (readError) throw readError;
+      const paths = attachments.map(a => attachmentPath(a.file_url));
+      const { data, error } = await supabaseClient.from('complaints').delete().eq('id', id).select('id');
+      if (error) throw error;
+      if (!data.length) throw new Error('No se eliminó la reclamación. Revisa permisos o recarga.');
+      // FK elimina metadatos; Storage requiere otra operación y puede fallar por separado.
+      if (paths.length) {
+        const { error: storageError } = await supabaseClient.storage.from('complaint-attachments').remove(paths);
+        if (storageError) {
+          await loadComplaints();
+          throw new Error('Reclamación eliminada; quedan archivos privados por limpiar en Storage.');
+        }
+      }
       await loadComplaints();
     }
 
-    function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-    function fmtDate(s) { return new Date(s).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }); }
+    // Escapar también comillas: algunos valores aparecen dentro de atributos HTML.
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[char]));
+    }
+    function fmtDate(s) { return new Date(/^\d{4}-\d{2}-\d{2}$/.test(s) ? s + 'T12:00:00' : s).toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' }); }
 
     restoreSession();
   </script>
