@@ -20,6 +20,7 @@ Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Can
     - **Asociación El Defensor del Paciente**: Valoración jurídica en negligencias, diagnósticos tardíos o listas de espera graves.
     - **Diputado del Común**: Defensor del Pueblo en Canarias.
   - **Redirección Zero-PII:** El escrito formal se genera y se copia/descarga localmente en el navegador. **InSalud nunca recopila DNI, certificados digitales ni credenciales Cl@ve**; la firma se realiza directamente en la Sede Electrónica oficial.
+  - **Accesibilidad por Voz:** Lectura local en voz alta (`Web Speech API`) del resumen de enrutamiento y las medidas solicitadas.
 - **Seguimiento de Plazos (60 días):** Edge Function `deadline-reminder` (protegida con `CRON_SECRET` y con bloqueo de seguridad `dry-run-no-domain` si no hay dominio de proyecto verificado en `REMINDER_FROM_EMAIL`).
 
 ---
@@ -29,6 +30,7 @@ Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Can
 ```text
 ├── index.html                  # Formulario ciudadano + flujo de tramitación oficial
 ├── listado.html                # Listado público de reclamaciones aprobadas
+├── privacidad.html             # Política de privacidad pública en la web (Zero-PII)
 ├── css/styles.css              # Estilos mobile-first
 ├── js/
 │   ├── app.js                  # Validación, subida de adjuntos y borrador formal local
@@ -72,6 +74,7 @@ node tests/backend-webhook.test.cjs
 - Función RPC `submit_complaint` con `SECURITY DEFINER` y validación en servidor.
 - Bucket privado `complaint-attachments` accesible solo mediante URLs firmadas temporales (60s) para administradores.
 - Los campos opcionales de nombre y DNI para el borrador descargable se procesan exclusivamente en memoria del navegador y no se envían a Supabase.
+- Consulta el detalle completo de qué se guarda y qué no en la [Política de Privacidad](PRIVACY.md).
 
 ---
 

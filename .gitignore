@@ -1,6 +1,5 @@
 # Documentation (PBL Chronicler - solo local)
 docs/
-GPT-6_Astra_Prompts.md
 
 # Dependencies
 node_modules/
@@ -32,4 +31,5 @@ HANDOFF.md
 ROADMAP.md
 SPEC.md
 CODEX.md
+CLAUDE.md
 admin/
