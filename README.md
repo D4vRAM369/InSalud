@@ -1,3 +1,5 @@
+![InSalud — Transparencia y Defensa Sanitaria en Gran Canaria](assets/img/banner-insalud.jpg)
+
 # InSalud — Plataforma Ciudadana de Defensa Sanitaria (Gran Canaria)
 
 Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Canario de la Salud (SCS) en Gran Canaria y guiar al paciente hacia una **reclamación formal efectiva** bajo el **Decreto 8/2025** y la **Ley 39/2015**, sin recopilar nunca datos de identidad oficial.
