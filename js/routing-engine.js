@@ -170,9 +170,28 @@ ___________________________
 `;
   }
 
+  function formatRouteForSpeech(data = {}) {
+    const route = data.route || resolveComplaintRoute(data);
+    const center = (data.center || 'el centro sanitario').trim();
+    const measures = Array.isArray(data.requestedMeasures) && data.requestedMeasures.length > 0
+      ? data.requestedMeasures.join('. ')
+      : 'solicitar una respuesta escrita motivada y medidas correctoras.';
+
+    let routePhrase = 'el trámite mil setecientos sesenta y ocho de reclamación sanitaria en la Sede Electrónica del Gobierno de Canarias. La administración tiene un plazo máximo legal de dos meses para responderte por escrito.';
+    if (route.primary.id === 'oddus_6465') {
+      routePhrase = 'el trámite seis mil cuatrocientos sesenta y cinco de disconformidades ante la ODDUS, la Oficina de Defensa de los Derechos de los Usuarios Sanitarios, porque ya recibiste una respuesta vacía o pasaron dos meses sin contestación.';
+    }
+    const harmPhrase = data.hasPhysicalHarm
+      ? ' Además, al haber daño físico o secuelas, te recomendamos valorar el trámite de responsabilidad patrimonial y contactar con la Asociación El Defensor del Paciente.'
+      : '';
+
+    return `Resumen de tu trámite en InSalud para ${center}. La ruta recomendada es ${routePhrase}${harmPhrase} Las medidas concretas que solicitas son: ${measures}. Recuerda que InSalud no guarda tu DNI ni tu Cl@ve; al pulsar el botón oficial, firmarás directamente en la web del Gobierno de Canarias.`;
+  }
+
   return {
     OFFICIAL_CHANNELS,
     resolveComplaintRoute,
-    buildFormalComplaintText
+    buildFormalComplaintText,
+    formatRouteForSpeech
   };
 });

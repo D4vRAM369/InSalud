@@ -51,4 +51,15 @@ assert.match(draft, /Reprogramación urgente de cita/);
 assert.match(draft, /María Pérez/);
 assert.match(draft, /2026-11-10/);
 
-console.log('routing: trámites 3831, 3832, 1817, Defensor del Paciente, Diputado del Común y borrador OK');
+// 5. Formato para lectura en voz alta con lenguaje natural (sin URLs crudas)
+const speech = routing.formatRouteForSpeech({
+  center: 'Hospital Doctor Negrín',
+  priorComplaintStatus: 'empty_response',
+  hasPhysicalHarm: true,
+  requestedMeasures: ['Respuesta escrita motivada.']
+});
+assert.doesNotMatch(speech, /https?:\/\//);
+assert.match(speech, /seis mil cuatrocientos sesenta y cinco/);
+assert.match(speech, /Defensor del Paciente/);
+
+console.log('routing: trámites 1768, 6465, 1817, Defensor del Paciente, Diputado del Común, voz y borrador OK');

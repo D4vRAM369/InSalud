@@ -17,6 +17,7 @@ const filterCategory = document.getElementById('filterCategory');
 const statTotal = document.getElementById('statTotal');
 const statCentros = document.getElementById('statCentros');
 const statCategorias = document.getElementById('statCategorias');
+const statDisconformidades = document.getElementById('statDisconformidades');
 
 // ---- INICIALIZACIÓN ----
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,7 +33,7 @@ async function loadComplaints() {
     // La vista pública omite emails; no basta con ocultarlos en las tarjetas.
     for (let offset = 0; ; offset += 500) {
       const { data, error } = await supabaseClient.from('public_complaints')
-        .select('id,center,category,incident_date,description,created_at')
+        .select('id,center,category,incident_date,description,prior_complaint_status,has_physical_harm,routed_procedure,requested_measures,created_at')
         .order('created_at', { ascending: false }).order('id').range(offset, offset + 499);
       if (error) throw error;
       rows.push(...data);
@@ -62,16 +63,31 @@ function renderComplaints(complaints) {
 
   noComplaints.style.display = 'none';
 
-  complaintsList.innerHTML = complaints.map(complaint => `
+  complaintsList.innerHTML = complaints.map(complaint => {
+    const isDisconformity = complaint.routed_procedure === 'oddus_3832'
+      || complaint.routed_procedure === 'oddus_6465'
+      || (complaint.prior_complaint_status && complaint.prior_complaint_status !== 'none');
+    const disconformityBadge = isDisconformity
+      ? '<span class="card-category" style="background:#FFF3E0;color:#E65100;margin-left:6px;">Disconformidad ODDUS (6465)</span>'
+      : '';
+    const harmBadge = complaint.has_physical_harm
+      ? '<span class="card-category" style="background:#FFEBEE;color:#B71C1C;margin-left:6px;">Daño / Secuelas</span>'
+      : '';
+    const measuresHtml = Array.isArray(complaint.requested_measures) && complaint.requested_measures.length > 0
+      ? `<p class="card-description" style="margin-top:8px;font-size:0.85rem;color:#455A64;"><strong>Medidas solicitadas:</strong> ${complaint.requested_measures.map(escapeHtml).join(' · ')}</p>`
+      : '';
+    return `
     <div class="complaint-card">
       <div class="card-header">
         <span class="card-center">${escapeHtml(complaint.center)}</span>
         <span class="card-date">${formatDate(complaint.incident_date)}</span>
       </div>
-      <span class="card-category">${escapeHtml(complaint.category)}</span>
+      <span class="card-category">${escapeHtml(complaint.category)}</span>${disconformityBadge}${harmBadge}
       <p class="card-description">${escapeHtml(complaint.description)}</p>
+      ${measuresHtml}
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // ---- ACTUALIZAR ESTADÍSTICAS Y GRÁFICAS ----
@@ -83,6 +99,15 @@ function updateStats(complaints) {
 
   const categorias = new Set(complaints.map(c => c.category));
   statCategorias.textContent = categorias.size;
+
+  if (statDisconformidades) {
+    const disconformidades = complaints.filter(c =>
+      c.routed_procedure === 'oddus_3832'
+      || c.routed_procedure === 'oddus_6465'
+      || (c.prior_complaint_status && c.prior_complaint_status !== 'none')
+    ).length;
+    statDisconformidades.textContent = disconformidades;
+  }
 
   renderCharts(complaints);
 }

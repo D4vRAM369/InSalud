@@ -8,6 +8,7 @@ let selectedFiles = [];
 let submitting = false;
 let pendingSubmission = null;
 let lastSubmittedDraftData = null;
+let lastSuccessAt = 0;
 
 // ---- ELEMENTOS DEL DOM ----
 const form = document.getElementById('complaintForm');
@@ -161,6 +162,15 @@ function initFormSubmit() {
     e.preventDefault();
 
     if (submitting) return;
+    const honeypotEl = document.getElementById('website');
+    if (honeypotEl && honeypotEl.value) {
+      showError('No se pudo validar el envío.');
+      return;
+    }
+    if (lastSuccessAt && Date.now() - lastSuccessAt < 15000) {
+      showError('Espera unos segundos antes de enviar otra reclamación.');
+      return;
+    }
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
       showError('No se pudo cargar la conexión. Comprueba tu red y recarga la página.');
       return;
@@ -222,6 +232,7 @@ function initFormSubmit() {
       });
       if (error) throw error;
       if (data !== pendingSubmission.complaint.id) throw new Error('Confirmación inválida');
+      lastSuccessAt = Date.now();
       lastSubmittedDraftData = collectLocalDraftContext();
       renderOfficialRoutePanel(lastSubmittedDraftData);
       pendingSubmission = null;
@@ -399,6 +410,44 @@ function generateFormalDraft() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function printFormalDraft() {
+  const payload = getDraftPayload();
+  const printableEl = document.getElementById('printableDraft');
+  if (printableEl) {
+    printableEl.textContent = buildFormalText(payload);
+  }
+  if (typeof window !== 'undefined' && typeof window.print === 'function') {
+    window.print();
+  }
+}
+
+function speakFormalSummary() {
+  if (typeof window === 'undefined' || !window.speechSynthesis || typeof SpeechSynthesisUtterance === 'undefined') {
+    showError('Tu navegador no soporta lectura en voz alta.');
+    return;
+  }
+  const synth = window.speechSynthesis;
+  const btn = document.getElementById('speakSummaryBtn');
+  if (synth.speaking) {
+    synth.cancel();
+    if (btn) btn.textContent = 'Escuchar Guía y Medidas en Voz Alta';
+    return;
+  }
+  const payload = getDraftPayload();
+  const route = resolveCurrentRoute(payload);
+  const spokenText = typeof InSaludRouting !== 'undefined' && InSaludRouting.formatRouteForSpeech
+    ? InSaludRouting.formatRouteForSpeech({ ...payload, route })
+    : `Ruta recomendada: ${route.primary.name}. ${route.primary.deadline}`;
+  const utterance = new SpeechSynthesisUtterance(spokenText);
+  utterance.lang = 'es-ES';
+  utterance.rate = 0.98;
+  utterance.onend = () => {
+    if (btn) btn.textContent = 'Escuchar Guía y Medidas en Voz Alta';
+  };
+  if (btn) btn.textContent = 'Detener Lectura en Voz Alta';
+  synth.speak(utterance);
 }
 
 function resetForm() {

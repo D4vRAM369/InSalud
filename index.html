@@ -230,6 +230,12 @@
           </label>
         </div>
 
+        <!-- Campo trampa anti-bots (honeypot) -->
+        <div class="honeypot-field" aria-hidden="true">
+          <label for="website">No rellenar este campo</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
         <!-- Botón enviar -->
         <div class="form-group">
           <button type="submit" id="submitBtn" class="btn-submit">
@@ -268,10 +274,13 @@
             <div class="formal-buttons">
               <button type="button" id="copyDraftBtn" onclick="copyFormalDraft()" class="btn-secondary">Copiar Escrito para Sede Electrónica</button>
               <button type="button" onclick="generateFormalDraft()" class="btn-accent">Descargar Borrador Formal (.txt)</button>
+              <button type="button" onclick="printFormalDraft()" class="btn-secondary">Imprimir / Guardar como PDF</button>
+              <button type="button" id="speakSummaryBtn" onclick="speakFormalSummary()" class="btn-secondary">Escuchar Guía y Medidas en Voz Alta</button>
               <a id="officialRouteLink" href="https://sede.gobiernodecanarias.org/sede/tramites/1768" target="_blank" rel="noopener noreferrer" class="btn-submit btn-official-link">
                 Ir al Trámite Oficial (Cl@ve / Certificado) &#8599;
               </a>
             </div>
+            <pre id="printableDraft" class="printable-draft"></pre>
             <p id="copyFeedback" class="small-hint" style="display:none; color:#1B5E20; font-weight:600;">Escrito copiado al portapapeles. Pégalo en la Sede Electrónica y adjunta tus documentos.</p>
             <div id="secondaryRoutes" class="secondary-routes"></div>
           </div>
@@ -304,6 +313,10 @@
     <div class="container">
       <p>InSalud — Plataforma ciudadana de transparencia sanitaria</p>
       <p class="footer-small">Gran Canaria · Servicio Canario de Salud</p>
+      <details class="privacy-details">
+        <summary>Privacidad Zero-PII y Aviso Legal</summary>
+        <p>InSalud es una iniciativa ciudadana sin ánimo de lucro. No recopilamos DNI, certificados digitales ni credenciales Cl@ve; la identificación oficial ocurre exclusivamente en la Sede Electrónica del Gobierno de Canarias. Las descripciones publicadas son anónimas y el correo opcional de seguimiento nunca se expone públicamente.</p>
+      </details>
     </div>
   </footer>
 

@@ -679,3 +679,59 @@ button, select, input[type="submit"] {
   color: var(--color-primary);
   text-decoration: underline;
 }
+
+/* === ANTI-SPAM HONEYPOT, PRIVACIDAD E IMPRESIÓN PDF === */
+.honeypot-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.privacy-details {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+
+.privacy-details summary {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.privacy-details p {
+  max-width: 680px;
+  margin: 8px auto 0;
+  line-height: 1.5;
+}
+
+.printable-draft {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-draft,
+  .printable-draft * {
+    visibility: visible;
+  }
+  .printable-draft {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 24px;
+    font-family: Georgia, serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    color: #000;
+    background: #fff;
+  }
+}
