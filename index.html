@@ -35,9 +35,87 @@
 
     <!-- INFORMACIÓN -->
     <section class="info-banner">
-      <h2>&#9888; ¿Tuviste un problema con el SCS?</h2>
-      <p>Reporta tu experiencia de forma <strong>anónima</strong>. Tu reclamación será publicada para visibilizar los problemas del sistema de salud en Gran Canaria.</p>
+      <div class="info-banner-row">
+        <div>
+          <h2>&#9888; ¿Tuviste un problema con el SCS?</h2>
+          <p>Reporta tu experiencia de forma <strong>anónima</strong>. Tu reclamación será publicada para visibilizar los problemas del sistema de salud en Gran Canaria.</p>
+        </div>
+        <button type="button" id="openOnboardingBtn" class="btn-how-it-works">¿Cómo funciona?</button>
+      </div>
     </section>
+
+    <!-- ONBOARDING MODAL -->
+    <dialog id="onboardingDialog" class="onboarding-dialog" closedby="any" aria-labelledby="onboardingTitle">
+      <div class="onboarding-header">
+        <span class="onboarding-badge">Guía rápida</span>
+        <form method="dialog">
+          <button type="submit" class="onboarding-close" aria-label="Cerrar guía" autofocus>&times;</button>
+        </form>
+      </div>
+      <h2 id="onboardingTitle" class="onboarding-title">¿Cómo funciona InSalud?</h2>
+      <p class="onboarding-subtitle">Así funciona el recorrido completo de tu reclamación en la web:</p>
+
+      <div class="onboarding-pipeline" aria-hidden="true">
+        <span>1. Reportas</span>
+        <span>&#8594;</span>
+        <span>2. Clasifica</span>
+        <span>&#8594;</span>
+        <span>3. Modera</span>
+        <span>&#8594;</span>
+        <span>4. Sede</span>
+        <span>&#8594;</span>
+        <span>5. 60 días</span>
+      </div>
+
+      <div class="onboarding-steps" id="onboardingSteps">
+        <article class="onboarding-step is-active" data-step="0">
+          <div class="onboarding-step-icon" aria-hidden="true">&#128221;</div>
+          <h3>1. Reportas tu caso y la web lo clasifica</h3>
+          <p>Indicas centro, fecha, categoría y lo ocurrido. Sin DNI ni Cl@ve. Con esos datos, la web detecta automáticamente si corresponde al <strong>SCS (1768)</strong>, <strong>Disconformidad ODDUS (6465)</strong> o <strong>Responsabilidad Patrimonial (1817)</strong>.</p>
+        </article>
+        <article class="onboarding-step" data-step="1" hidden>
+          <div class="onboarding-step-icon" aria-hidden="true">&#128274;</div>
+          <h3>2. Guardado seguro y adjuntos privados</h3>
+          <p>Tu reclamación se guarda en estado pendiente. Si adjuntas pruebas (opcional), se almacenan en un <strong>espacio privado</strong> que nunca se publica; puedes tapar tu nombre o DNI antes de subirlas.</p>
+        </article>
+        <article class="onboarding-step" data-step="2" hidden>
+          <div class="onboarding-step-icon" aria-hidden="true">&#128226;</div>
+          <h3>3. Moderación y publicación anónima</h3>
+          <p>Moderación revisa el relato (y las pruebas internas si las hay) antes de publicarlo en el <strong>Listado ciudadano</strong>. Tu email y tus adjuntos jamás se muestran al público.</p>
+        </article>
+        <article class="onboarding-step" data-step="3" hidden>
+          <div class="onboarding-step-icon" aria-hidden="true">&#127963;&#65039;</div>
+          <h3>4. Escrito listo para la Sede Electrónica</h3>
+          <p>Al instante, la web genera tu <strong>escrito formal</strong> listo para copiar o imprimir y te lleva al trámite oficial del Gobierno de Canarias, donde presentas la reclamación con tu Cl@ve o certificado.</p>
+        </article>
+        <article class="onboarding-step" data-step="4" hidden>
+          <div class="onboarding-step-icon" aria-hidden="true">&#9200;</div>
+          <h3>5. Control del plazo legal de 60 días</h3>
+          <p>Si dejaste un email opcional, la web activa una cuenta de <strong>2 meses</strong>. Si la Administración no responde a tiempo, te avisamos para que puedas escalar al Diputado del Común o al Defensor del Paciente.</p>
+          <div class="onboarding-disclaimer">
+            <strong>Aviso sobre el recordatorio:</strong> Recomendamos que guardes el email o justificante de respuesta una vez que envíes la reclamación en la Sede Electrónica y uses otro método personal como recordatorio, ya que no nos hacemos responsables de que el e-mail recordatorio llegue.
+          </div>
+          <div class="onboarding-disclaimer onboarding-disclaimer-legal">
+            <strong>Aviso importante:</strong> Esta web es un registro público anónimo de reclamaciones sanitarias que facilita el trámite para realizar reclamaciones. Publicar tu reclamación aquí sin seguir los pasos en la Sede Electrónica no tiene validez oficial más allá de dejar tu reporte público aquí, una vez sea aprobado por moderación.
+          </div>
+        </article>
+      </div>
+
+      <div class="onboarding-dots" id="onboardingDots" aria-label="Progreso de la guía">
+        <button type="button" class="onboarding-dot is-active" data-goto="0" aria-label="Paso 1"></button>
+        <button type="button" class="onboarding-dot" data-goto="1" aria-label="Paso 2"></button>
+        <button type="button" class="onboarding-dot" data-goto="2" aria-label="Paso 3"></button>
+        <button type="button" class="onboarding-dot" data-goto="3" aria-label="Paso 4"></button>
+        <button type="button" class="onboarding-dot" data-goto="4" aria-label="Paso 5"></button>
+      </div>
+
+      <div class="onboarding-footer">
+        <button type="button" id="onboardingPrevBtn" class="btn-onboarding-secondary" hidden>Anterior</button>
+        <span id="onboardingCounter" class="onboarding-counter">1 / 5</span>
+        <button type="button" id="onboardingNextBtn" class="btn-onboarding-primary">Siguiente &#8594;</button>
+        <button type="button" id="onboardingDoneBtn" class="btn-onboarding-primary" hidden>Empezar reclamación</button>
+      </div>
+    </dialog>
 
     <!-- FORMULARIO -->
     <section class="form-section">

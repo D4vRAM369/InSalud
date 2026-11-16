@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCharCounter();
   initFileUpload();
   initFormSubmit();
+  initOnboarding();
 });
 
 // ---- CONTADOR DE CARACTERES ----
@@ -586,4 +587,79 @@ function resetForm() {
   renderFileList();
   charCount.textContent = '0';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ---- ONBOARDING ("¿Cómo funciona?") ----
+function initOnboarding() {
+  const openBtn = document.getElementById('openOnboardingBtn');
+  const dialog = document.getElementById('onboardingDialog');
+  if (!openBtn || !dialog || typeof dialog.showModal !== 'function') return;
+
+  const steps = Array.from(dialog.querySelectorAll('.onboarding-step'));
+  const dots = Array.from(dialog.querySelectorAll('.onboarding-dot'));
+  const pipelinePills = Array.from(dialog.querySelectorAll('.onboarding-pipeline span:nth-child(odd)'));
+  const prevBtn = document.getElementById('onboardingPrevBtn');
+  const nextBtn = document.getElementById('onboardingNextBtn');
+  const doneBtn = document.getElementById('onboardingDoneBtn');
+  const counter = document.getElementById('onboardingCounter');
+  let currentStep = 0;
+
+  function renderStep(index) {
+    currentStep = Math.max(0, Math.min(index, steps.length - 1));
+    steps.forEach((step, idx) => {
+      const active = idx === currentStep;
+      step.hidden = !active;
+      step.classList.toggle('is-active', active);
+    });
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('is-active', idx === currentStep);
+    });
+    pipelinePills.forEach((pill, idx) => {
+      pill.classList.toggle('is-current', idx === currentStep);
+    });
+    if (counter) counter.textContent = `${currentStep + 1} / ${steps.length}`;
+    if (prevBtn) prevBtn.hidden = currentStep === 0;
+    const isLast = currentStep === steps.length - 1;
+    if (nextBtn) nextBtn.hidden = isLast;
+    if (doneBtn) doneBtn.hidden = !isLast;
+  }
+
+  openBtn.addEventListener('click', () => {
+    renderStep(0);
+    dialog.showModal();
+  });
+
+  if (prevBtn) prevBtn.addEventListener('click', () => renderStep(currentStep - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => renderStep(currentStep + 1));
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = Number(dot.dataset.goto);
+      if (Number.isInteger(target)) renderStep(target);
+    });
+  });
+
+  if (doneBtn) {
+    doneBtn.addEventListener('click', () => {
+      dialog.close('start');
+      const centerField = document.getElementById('center');
+      if (centerField && typeof centerField.focus === 'function') centerField.focus();
+    });
+  }
+
+  dialog.addEventListener('close', () => {
+    dialog.returnValue = '';
+  });
+
+  // Fallback progresivo para navegadores sin closedby="any" (como Safari).
+  if (typeof HTMLDialogElement !== 'undefined' && !('closedBy' in HTMLDialogElement.prototype)) {
+    const isOutside = (e) => {
+      const r = dialog.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    let pressedOutside = false;
+    dialog.addEventListener('pointerdown', (e) => { pressedOutside = isOutside(e); });
+    dialog.addEventListener('pointerup', (e) => {
+      if (pressedOutside && isOutside(e)) dialog.close();
+    });
+  }
 }
