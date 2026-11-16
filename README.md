@@ -4,6 +4,8 @@
 
 Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Canario de la Salud (SCS) en Gran Canaria y guiar al paciente hacia una **reclamación formal efectiva** bajo el **Decreto 8/2025** y la **Ley 39/2015**, sin recopilar nunca datos de identidad oficial.
 
+**Demo en producción:** [https://insalud-gc.vercel.app](https://insalud-gc.vercel.app)
+
 ---
 
 ## Características Principales
@@ -71,3 +73,20 @@ node tests/backend-webhook.test.cjs
 - Función RPC `submit_complaint` con `SECURITY DEFINER` y validación en servidor.
 - Bucket privado `complaint-attachments` accesible solo mediante URLs firmadas temporales (60s) para administradores.
 - Los campos opcionales de nombre y DNI para el borrador descargable se procesan exclusivamente en memoria del navegador y no se envían a Supabase.
+
+---
+
+## Despliegue Propio (Fork / Open Source)
+
+1. Crea un proyecto gratuito en [Supabase](https://supabase.com) y ejecuta en el **SQL Editor**, en este orden, las migraciones de `supabase/migrations/`:
+   1. `001_initial_schema.sql`
+   2. `002_fix_permissions.sql`
+   3. `003_security.sql`
+   4. `004_pipeline_tracking.sql`
+2. Actualiza `SUPABASE_URL` y `SUPABASE_ANON_KEY` en `js/supabase-client.js` con las claves públicas de tu proyecto.
+3. Despliega el frontend estático en Vercel, Cloudflare Pages o GitHub Pages (sin paso de compilación).
+4. *(Opcional)* Despliega `supabase/functions/deadline-reminder` configurando `CRON_SECRET`, `RESEND_API_KEY` y `REMINDER_FROM_EMAIL` en los secretos de Edge Functions.
+
+## Licencia
+
+Distribuido bajo licencia [MIT](LICENSE).
