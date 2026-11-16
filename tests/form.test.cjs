@@ -39,16 +39,29 @@ const file = (name = 'a.png', size = 1) => ({ name, size, type: 'image/png' });
   assert.equal(vm.runInContext('selectedFiles.length', b.context), 2);
   const unavailable = setup(null); await unavailable.submit();
   assert.match(unavailable.node('errorText').textContent, /cargar|conexión/i);
-  let calls = [], uploads = [], rejectUpload = true, failRpc = true;
-  const c = setup({ storage: { from: () => ({ upload: async (path) => {
+  let calls = [], uploads = [], buckets = [], rejectUpload = true, failRpc = true;
+  const c = setup({ storage: { from: (bucket) => { buckets.push(bucket); return { upload: async (path) => {
     uploads.push(path); return { error: rejectUpload ? new Error('storage') : null };
-  } }) }, rpc: async (name, args) => { calls.push(args); return failRpc ? {error: new Error('red')} : {data: args.p_complaint.id, error:null}; } });
+  } }; } }, rpc: async (name, args) => { calls.push(args); return failRpc ? {error: new Error('red')} : {data: args.p_complaint.id, error:null}; } });
   c.context.handleFiles([file()]); await c.submit();
+  assert.equal(buckets[0], 'complaint-attachments');
   assert.equal(calls.length, 0); assert.notEqual(c.node('successMessage').style.display, 'block');
   rejectUpload = false; await c.submit(); failRpc = false; await c.submit();
   assert.equal(calls.length, 2); assert.equal(calls[0].p_complaint.id, calls[1].p_complaint.id);
   assert.equal(uploads.length, 2); assert.equal(c.node('successMessage').style.display, 'block');
   assert.match(calls[0].p_attachments[0].file_url, /^complaints\/[\da-f-]+\/[\da-f-]+\.png$/);
+
+  // Error SQL 22023: muestra el motivo real y desbloquea el formulario para poder corregir adjuntos/datos
+  const valErr = setup({
+    storage: { from: () => ({ upload: async () => ({ error: null }) }) },
+    rpc: async () => ({ error: { code: '22023', message: 'Archivo ausente o no permitido' } })
+  });
+  valErr.context.handleFiles([file()]);
+  await valErr.submit();
+  assert.match(valErr.node('errorText').textContent, /Archivo ausente o no permitido/);
+  assert.match(valErr.node('errorText').textContent, /22023/);
+  assert.equal(valErr.node('attachments').disabled, false);
+  assert.equal(valErr.node('description').disabled, false);
   let release; let count = 0;
   const d = setup({rpc: async () => { count++; await new Promise(r => release = r); return {data: vm.runInContext('pendingSubmission.complaint.id', d.context), error:null}; }});
   const first = d.submit(); await d.submit(); d.context.handleFiles([file()]);

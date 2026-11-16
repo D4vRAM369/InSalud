@@ -41,10 +41,12 @@ Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Can
 ├── supabase/
 │   ├── migrations/             # Esquema SQL, RLS, vista security_barrier y tracking 60d
 │   └── functions/
-│       ├── telegram-webhook/   # Bot de Telegram (Deno)
+│       ├── telegram-webhook/   # Bot de Telegram (Deno, pendiente de configuración)
 │       └── deadline-reminder/  # Recordatorio automático de plazo de 2 meses
 └── tests/                      # Suite de tests unitarios en Node.js
 ```
+
+> **Aviso:** Actualmente no hay ningún bot de Telegram configurado ni activo en producción; las reclamaciones se envían únicamente a través del formulario web. La función `supabase/functions/telegram-webhook/` está preparada en el código para despliegues futuros o propios.
 
 ---
 

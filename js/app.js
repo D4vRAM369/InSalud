@@ -240,14 +240,25 @@ function initFormSubmit() {
       successMessage.style.display = 'block';
       successMessage.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
+      const errorCode = error && (error.code || error.statusCode) ? String(error.code || error.statusCode) : '';
+      const errorMsg = error && error.message ? String(error.message).trim() : '';
+      // Un error SQL 22023 es un rechazo de validación antes de guardar: desbloqueamos el formulario para corregir.
+      const isValidationError = errorCode === '22023';
+      if (isValidationError) {
+        pendingSubmission = null;
+      }
       // No imprimimos la reclamación ni datos personales, solo el código/motivo técnico seguro.
-      const detail = error && (error.code || error.statusCode || error.message)
-        ? ` (${String(error.code || error.statusCode || error.message).slice(0, 120)})`
-        : '';
-      console.error('Error en envío:', error?.code || error?.statusCode || error?.message || error);
-      showError((pendingSubmission?.attempted
-        ? 'No se pudo confirmar el envío. Pulsa Enviar para reintentar la misma reclamación sin duplicarla. Conserva esta página abierta.'
-        : 'No se pudo enviar la reclamación o alguno de sus archivos. Conservamos tus datos para reintentar.') + detail);
+      const detailParts = [errorCode, errorMsg].filter(Boolean);
+      const detail = detailParts.length ? ` (${detailParts.join(': ').slice(0, 140)})` : '';
+      console.error('Error en envío:', errorCode || errorMsg || error);
+      if (isValidationError) {
+        const reason = errorMsg || 'Revisa los campos y los archivos adjuntos';
+        showError(`No se pudo validar el envío: ${reason}. Revisa tus datos o adjuntos e inténtalo de nuevo. (${errorCode})`);
+      } else {
+        showError((pendingSubmission?.attempted
+          ? 'No se pudo confirmar el envío. Pulsa Enviar para reintentar la misma reclamación sin duplicarla. Conserva esta página abierta.'
+          : 'No se pudo enviar la reclamación o alguno de sus archivos. Conservamos tus datos para reintentar.') + detail);
+      }
     } finally {
       setLoading(false);
     }
@@ -262,8 +273,10 @@ async function uploadFiles() {
   // Conservamos las subidas confirmadas: reintentar no crea otra copia de cada archivo.
   for (let i = pendingSubmission.attachments.length; i < selectedFiles.length; i++) {
     const file = selectedFiles[i];
-    const path = `complaints/${pendingSubmission.complaint.id}/${generateUUIDv4()}.${extensions[file.type]}`;
-    const { error } = await supabaseClient.storage.from('complaints-attachments')
+    const ext = extensions[file.type] || 'bin';
+    const path = `complaints/${pendingSubmission.complaint.id}/${generateUUIDv4()}.${ext}`;
+    // El bucket privado en Supabase Storage y en las migraciones SQL es singular: complaint-attachments.
+    const { error } = await supabaseClient.storage.from('complaint-attachments')
       .upload(path, file, { contentType: file.type, upsert: false });
     if (error) throw error;
     // Guardamos una ruta privada; solamente un administrador podrá generar una URL temporal.
