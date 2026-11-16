@@ -445,35 +445,121 @@ function printFormalDraft() {
   }
 }
 
-function speakFormalSummary() {
+const SPEECH_BTN_IDLE = 'Escuchar Guía y Medidas en Voz Alta';
+const SPEECH_BTN_ACTIVE = 'Detener Lectura en Voz Alta';
+let speechSessionId = 0;
+
+function stopSpeechPlayback() {
+  speechSessionId += 1;
+  if (typeof window !== 'undefined' && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+  const btn = document.getElementById('speakSummaryBtn');
+  if (btn) btn.textContent = SPEECH_BTN_IDLE;
+}
+
+function loadSpeechVoices(synth) {
+  const existing = typeof synth.getVoices === 'function' ? synth.getVoices() : [];
+  if (existing.length > 0 || typeof synth.addEventListener !== 'function') {
+    return Promise.resolve(existing);
+  }
+  return new Promise(resolve => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      if (typeof synth.removeEventListener === 'function') {
+        synth.removeEventListener('voiceschanged', finish);
+      }
+      resolve(typeof synth.getVoices === 'function' ? synth.getVoices() : []);
+    };
+    synth.addEventListener('voiceschanged', finish);
+    setTimeout(finish, 600);
+  });
+}
+
+function pickSpanishVoice(voices) {
+  if (!Array.isArray(voices) || voices.length === 0) return null;
+  return voices.find(v => /^es[-_]ES$/i.test(v.lang || ''))
+    || voices.find(v => /^es\b/i.test(v.lang || ''))
+    || null;
+}
+
+function splitSpeechChunks(text, maxLen = 220) {
+  const sentences = String(text || '').split(/(?<=[.!?])\s+/).filter(Boolean);
+  const chunks = [];
+  let current = '';
+  for (const sentence of sentences) {
+    if (current && (current.length + 1 + sentence.length) > maxLen) {
+      chunks.push(current);
+      current = sentence;
+    } else {
+      current = current ? `${current} ${sentence}` : sentence;
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks.length > 0 ? chunks : [String(text || '')];
+}
+
+async function speakFormalSummary() {
   if (typeof window === 'undefined' || !window.speechSynthesis || typeof SpeechSynthesisUtterance === 'undefined') {
     showError('Tu navegador no soporta lectura en voz alta.');
     return;
   }
   const synth = window.speechSynthesis;
   const btn = document.getElementById('speakSummaryBtn');
-  if (synth.speaking) {
-    synth.cancel();
-    if (btn) btn.textContent = 'Escuchar Guía y Medidas en Voz Alta';
+  if (synth.speaking || synth.pending) {
+    stopSpeechPlayback();
     return;
   }
+
+  const currentSession = ++speechSessionId;
+  const voices = await loadSpeechVoices(synth);
+  if (currentSession !== speechSessionId) return;
+
+  if (typeof synth.getVoices === 'function' && voices.length === 0) {
+    showError('No hay voces de lectura disponibles en este navegador o sistema operativo.');
+    return;
+  }
+
   const payload = getDraftPayload();
   const route = resolveCurrentRoute(payload);
   const spokenText = typeof InSaludRouting !== 'undefined' && InSaludRouting.formatRouteForSpeech
     ? InSaludRouting.formatRouteForSpeech({ ...payload, route })
     : `Ruta recomendada: ${route.primary.name}. ${route.primary.deadline}`;
-  const utterance = new SpeechSynthesisUtterance(spokenText);
-  utterance.lang = 'es-ES';
-  utterance.rate = 0.98;
-  utterance.onend = () => {
-    if (btn) btn.textContent = 'Escuchar Guía y Medidas en Voz Alta';
+
+  const spanishVoice = pickSpanishVoice(voices);
+  const chunks = splitSpeechChunks(spokenText);
+  let index = 0;
+
+  if (btn) btn.textContent = SPEECH_BTN_ACTIVE;
+  if (typeof synth.resume === 'function') synth.resume();
+
+  const speakNext = () => {
+    if (currentSession !== speechSessionId) return;
+    if (index >= chunks.length) {
+      if (btn) btn.textContent = SPEECH_BTN_IDLE;
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(chunks[index++]);
+    utterance.lang = 'es-ES';
+    if (spanishVoice) utterance.voice = spanishVoice;
+    utterance.rate = 0.98;
+    utterance.onend = speakNext;
+    utterance.onerror = () => {
+      if (currentSession !== speechSessionId) return;
+      stopSpeechPlayback();
+      showError('No se pudo reproducir la lectura en voz alta en este navegador.');
+    };
+    synth.speak(utterance);
   };
-  if (btn) btn.textContent = 'Detener Lectura en Voz Alta';
-  synth.speak(utterance);
+
+  speakNext();
 }
 
 function resetForm() {
   if (submitting) return;
+  stopSpeechPlayback();
   pendingSubmission = null;
   lastSubmittedDraftData = null;
   setLoading(false);

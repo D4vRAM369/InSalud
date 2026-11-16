@@ -56,5 +56,34 @@ const file = (name = 'a.png', size = 1) => ({ name, size, type: 'image/png' });
   const e = setup({rpc() { throw new Error('No debe enviar'); }});
   e.node('description').value = 'a'.repeat(2001); await e.submit(); assert.match(e.node('errorText').textContent, /2000/);
   e.node('description').value = 'a'.repeat(20); e.node('incidentDate').value = '2999-01-01'; await e.submit(); assert.match(e.node('errorText').textContent, /fecha/i);
-  console.log('form: XSS, límites, validación, errores, reintentos y doble envío OK');
+
+  // Web Speech API: sin voces -> error claro; con voz española -> reproduce por fragmentos y restaura botón
+  const spoken = [];
+  const speechSynth = { speaking: false, pending: false, voices: [], getVoices() { return this.voices; },
+    cancel() { this.speaking = false; }, resume() {},
+    speak(u) { spoken.push(u); this.speaking = true; if (u.onend) { this.speaking = false; u.onend(); } } };
+  const speechCtx = vm.createContext({
+    document: e.context.document,
+    window: { scrollTo() {}, speechSynthesis: speechSynth },
+    SpeechSynthesisUtterance: function (t) { this.text = t; },
+    console, crypto: { randomUUID }, supabaseClient: null, Date, setTimeout,
+    InSaludRouting: require('../js/routing-engine.js')
+  });
+  const sNodes = {};
+  const sNode = id => (sNodes[id] ||= { value: '', checked: true, children: [], style: {}, disabled: false,
+    listeners: {}, classList: { add() {}, remove() {} }, addEventListener() {}, querySelector() { return sNode(id + 'q'); },
+    appendChild() {}, replaceChildren() {}, scrollIntoView() {}, click() {}, setAttribute() {}, checkValidity() { return true; }, reset() {} });
+  speechCtx.document = { getElementById: sNode, createElement: () => sNode(randomUUID()), addEventListener() {} };
+  sNode('center').value = 'Hospital Doctor Negrín'; sNode('category').value = 'Otro';
+  sNode('incidentDate').value = '2026-11-10'; sNode('description').value = 'Descripción de prueba suficientemente larga';
+  vm.runInContext(fs.readFileSync('js/app.js', 'utf8'), speechCtx);
+  await speechCtx.speakFormalSummary();
+  assert.match(sNode('errorText').textContent, /voces/i);
+  speechSynth.voices = [{ lang: 'en-US', name: 'EN' }, { lang: 'es-ES', name: 'ES' }];
+  await speechCtx.speakFormalSummary();
+  assert.ok(spoken.length >= 1);
+  assert.equal(spoken[0].voice.lang, 'es-ES');
+  assert.equal(sNode('speakSummaryBtn').textContent, 'Escuchar Guía y Medidas en Voz Alta');
+
+  console.log('form: XSS, límites, validación, errores, reintentos, voz y doble envío OK');
 })().catch(error => { console.error(error); process.exitCode = 1; });
