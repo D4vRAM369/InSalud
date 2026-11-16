@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidad — InSalud</title>
+  <meta name="description" content="Política de Privacidad Zero-PII de InSalud: qué datos se guardan, cuáles nunca se recopilan y cómo protegemos tu anonimato.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Política de Privacidad — InSalud">
+  <meta property="og:description" content="Transparencia total sobre qué se guarda y qué no en InSalud. Sin DNI, sin Cl@ve y sin cookies de rastreo.">
+  <meta property="og:image" content="https://insalud-lpgc.vercel.app/assets/img/social-preview_insalud_v2.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .privacy-section h2 {
+      margin-top: 28px;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      color: var(--primary-dark, #0d47a1);
+    }
+    .privacy-section h2:first-child {
+      margin-top: 0;
+    }
+    .privacy-section p,
+    .privacy-section li {
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .privacy-section ul,
+    .privacy-section ol {
+      padding-left: 20px;
+      margin-bottom: 14px;
+    }
+    .privacy-table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    .privacy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+    .privacy-table th,
+    .privacy-table td {
+      border: 1px solid #d9e2ec;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .privacy-table th {
+      background: #f0f4f8;
+      font-weight: 700;
+    }
+    .privacy-nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="sr-only">InSalud — Política de Privacidad</h1>
+        <a class="header-home" href="index.html" aria-label="InSalud — ir al inicio">
+          <img class="header-banner" src="assets/img/banner-header.jpg" width="1376" height="430"
+               alt="InSalud — Transparencia y Defensa Sanitaria · Gran Canaria">
+        </a>
+        <p class="tagline">Política de Privacidad y Transparencia de Datos (Zero-PII)</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <section class="info-banner">
+      <h2>Principio Zero-PII: Tu identidad oficial nunca pasa por nuestros servidores</h2>
+      <p><strong>InSalud</strong> es una iniciativa ciudadana sin ánimo de lucro y de código abierto (licencia MIT). <strong>No</strong> pertenece, <strong>no</strong> está afiliada y <strong>no</strong> representa al Servicio Canario de la Salud (SCS), al Gobierno de Canarias ni a la ODDUS.</p>
+      <p class="help-text" style="margin-top: 8px;">Última actualización: 16 de noviembre de 2026</p>
+    </section>
+
+    <section class="form-section privacy-section">
+      <h2>1. Qué NO guardamos nunca</h2>
+      <p>InSalud está diseñada bajo el principio de minimización estricta de datos. En nuestros servidores <strong>nunca</strong> se recopilan ni almacenan:</p>
+      <ul>
+        <li><strong>Documentos de identidad oficial:</strong> nunca pedimos ni guardamos DNI, NIE, pasaporte ni número de tarjeta sanitaria en la base de datos.</li>
+        <li><strong>Credenciales ni certificados digitales:</strong> nunca solicitamos ni custodiamos claves de <strong>Cl@ve</strong>, DNIe ni certificados electrónicos. La firma oficial ocurre únicamente en la Sede Electrónica del Gobierno de Canarias.</li>
+        <li><strong>Datos opcionales del borrador local:</strong> si tras enviar tu reclamación rellenas <em>Nombre y apellidos</em> o <em>DNI / NIE</em> para descargar, imprimir o copiar el escrito formal, esa información se procesa <strong>solo en la memoria de tu navegador</strong> y nunca se envía a Supabase ni a ningún servidor.</li>
+        <li><strong>Identificadores de Telegram en la queja pública:</strong> el bot de Telegram no guarda tu <code>chat_id</code> ni tu nombre de usuario en la descripción. Solo registra el <code>telegram_update_id</code> numérico para evitar envíos duplicados.</li>
+        <li><strong>Cookies de seguimiento ni analítica invasiva:</strong> no usamos cookies publicitarias, Google Analytics ni píxeles de rastreo.</li>
+        <li><strong>Registros (logs) con contenido médico:</strong> los errores técnicos no registran descripciones de reclamaciones, correos ni identificadores personales.</li>
+      </ul>
+
+      <h2>2. Qué SÍ guardamos, dónde y para qué</h2>
+      <p>Solo almacenamos la información que decides enviar en el formulario para dar visibilidad estadística y ayudarte con el seguimiento del plazo legal de 2 meses (Decreto 8/2025):</p>
+
+      <div class="privacy-table-wrap">
+        <table class="privacy-table">
+          <thead>
+            <tr>
+              <th>Dato</th>
+              <th>Obligatorio</th>
+              <th>Dónde se guarda</th>
+              <th>Visibilidad</th>
+              <th>Finalidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Centro / Hospital y Categoría</td>
+              <td>Sí</td>
+              <td>Supabase (<code>complaints</code>)</td>
+              <td>Pública si se aprueba</td>
+              <td>Estadísticas y filtros en el listado</td>
+            </tr>
+            <tr>
+              <td>Fecha del incidente y Descripción (20–2000 caracteres)</td>
+              <td>Sí</td>
+              <td>Supabase (<code>complaints</code>)</td>
+              <td>Pública si se aprueba</td>
+              <td>Evidencia ciudadana anónima</td>
+            </tr>
+            <tr>
+              <td>Medidas concretas solicitadas, estado previo y daño físico</td>
+              <td>No</td>
+              <td>Supabase (<code>complaints</code>)</td>
+              <td>Pública si se aprueba</td>
+              <td>Enrutamiento al organismo oficial adecuado</td>
+            </tr>
+            <tr>
+              <td>Correo electrónico (<code>email</code>)</td>
+              <td>No</td>
+              <td>Supabase (<code>complaints</code>)</td>
+              <td><strong>Privada (nunca pública)</strong></td>
+              <td>Recordatorio automático a los 60 días o contacto sobre tu caso</td>
+            </tr>
+            <tr>
+              <td>Archivos adjuntos (máx. 3 archivos, 5 MiB c/u, 10 MiB total)</td>
+              <td>No</td>
+              <td>Bucket privado <code>complaint-attachments</code></td>
+              <td><strong>Privada (nunca pública)</strong></td>
+              <td>Revisión interna en moderación mediante URLs firmadas de 60 segundos</td>
+            </tr>
+            <tr>
+              <td>Identificador técnico (UUID v4, origen, estado y fecha de plazo)</td>
+              <td>Automático</td>
+              <td>Supabase (<code>complaints</code>)</td>
+              <td>Parcial (estado, origen y fecha)</td>
+              <td>Evitar duplicados, moderar y calcular el plazo legal de 60 días</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Aviso importante:</strong> antes de enviar el formulario, recuerda eliminar nombres propios, teléfonos, direcciones o números de historia clínica tanto del texto como de los documentos o imágenes que adjuntes.</p>
+
+      <h2>3. Visibilidad pública y moderación</h2>
+      <ul>
+        <li>Todas las reclamaciones entran con estado <code>pending</code> y <strong>no son visibles públicamente</strong> hasta que pasan revisión.</li>
+        <li>El <a href="listado.html">listado público</a> consulta exclusivamente la vista segura <code>public_complaints</code> (<code>security_barrier = true</code>), que solo muestra casos publicados y <strong>excluye</strong> el correo electrónico y metadatos internos.</li>
+        <li>Los archivos adjuntos <strong>nunca</strong> se muestran ni se enlazan en el listado público.</li>
+      </ul>
+
+      <h2>4. Servicios de terceros y enlaces externos</h2>
+      <ol>
+        <li><strong>Vercel:</strong> alojamiento estático de la web (procesa IP y cabeceras HTTP estándar al servir la página).</li>
+        <li><strong>Supabase:</strong> base de datos PostgreSQL, almacenamiento privado de archivos y Edge Functions.</li>
+        <li><strong>Resend</strong> <em>(si el recordatorio de 60 días está activo con dominio verificado)</em>: envío del aviso por correo si facilitaste tu email.</li>
+        <li><strong>Telegram</strong> <em>(opcional)</em>: solo si decides usar el bot de Telegram como canal alternativo.</li>
+        <li><strong>CDNs públicos:</strong> la web carga la librería de Supabase desde <code>unpkg.com</code> y Chart.js en el listado desde <code>cdn.jsdelivr.net</code>.</li>
+        <li><strong>Sede Electrónica y organismos externos:</strong> al pulsar los enlaces hacia el Gobierno de Canarias, Diputado del Común o El Defensor del Paciente, abandonas InSalud y pasas a sus respectivas políticas de privacidad.</li>
+      </ol>
+
+      <h2>5. Seguridad técnica</h2>
+      <ul>
+        <li><strong>Row Level Security (RLS):</strong> impide lecturas directas anónimas sobre la tabla <code>complaints</code> y los adjuntos.</li>
+        <li><strong>Validación en servidor (<code>submit_complaint</code>):</strong> comprueba longitudes, fechas no futuras, tipos MIME (JPG, PNG, GIF, WebP, PDF, DOC, DOCX) y tamaño real de archivos.</li>
+        <li><strong>Bucket privado:</strong> los adjuntos solo son accesibles para moderación mediante URLs firmadas temporales de <strong>60 segundos</strong>.</li>
+      </ul>
+
+      <h2>6. Derechos del usuario (RGPD / LOPDGDD)</h2>
+      <p>Puedes solicitar el acceso, rectificación o supresión de cualquier dato enviado (la eliminación de una reclamación borra en cascada sus adjuntos asociados).</p>
+      <p>Para solicitar la retirada de una reclamación o ejercer tus derechos, puedes abrir una incidencia en el repositorio oficial <a href="https://github.com/D4vRAM369/InSalud" target="_blank" rel="noopener noreferrer">github.com/D4vRAM369/InSalud</a> indicando la fecha aproximada, el centro y un fragmento del texto (sin publicar nunca tu DNI ni datos sensibles), o contactar con el responsable de la instancia desplegada.</p>
+
+      <div class="privacy-nav">
+        <a href="index.html" class="btn-submit" style="text-decoration:none; display:inline-block; width:auto;">&#8592; Volver al formulario</a>
+        <a href="listado.html" class="btn-secondary">Ver listado público</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>InSalud — Plataforma ciudadana de transparencia sanitaria</p>
+      <p class="footer-small">Gran Canaria · Servicio Canario de Salud · <a href="privacidad.html" style="color: white;">Política de Privacidad</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
