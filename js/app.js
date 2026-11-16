@@ -222,7 +222,7 @@ function initFormSubmit() {
       const signature = JSON.stringify([complaint, selectedFiles.map(file => [file.name, file.size, file.type, file.lastModified])]);
       // Reutilizar la identidad evita duplicados si el servidor guardó pero se perdió su respuesta.
       if (!pendingSubmission || (!pendingSubmission.attempted && pendingSubmission.signature !== signature)) {
-        pendingSubmission = { complaint: { id: crypto.randomUUID(), ...complaint }, signature, attachments: [], attempted: false };
+        pendingSubmission = { complaint: { id: generateUUIDv4(), ...complaint }, signature, attachments: [], attempted: false };
       }
       await uploadFiles();
       pendingSubmission.attempted = true;
@@ -240,10 +240,14 @@ function initFormSubmit() {
       successMessage.style.display = 'block';
       successMessage.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
-      // No imprimimos la reclamación ni errores remotos: pueden contener datos personales.
-      showError(pendingSubmission?.attempted
+      // No imprimimos la reclamación ni datos personales, solo el código/motivo técnico seguro.
+      const detail = error && (error.code || error.statusCode || error.message)
+        ? ` (${String(error.code || error.statusCode || error.message).slice(0, 120)})`
+        : '';
+      console.error('Error en envío:', error?.code || error?.statusCode || error?.message || error);
+      showError((pendingSubmission?.attempted
         ? 'No se pudo confirmar el envío. Pulsa Enviar para reintentar la misma reclamación sin duplicarla. Conserva esta página abierta.'
-        : 'No se pudo enviar la reclamación o alguno de sus archivos. Conservamos tus datos para reintentar.');
+        : 'No se pudo enviar la reclamación o alguno de sus archivos. Conservamos tus datos para reintentar.') + detail);
     } finally {
       setLoading(false);
     }
@@ -258,8 +262,8 @@ async function uploadFiles() {
   // Conservamos las subidas confirmadas: reintentar no crea otra copia de cada archivo.
   for (let i = pendingSubmission.attachments.length; i < selectedFiles.length; i++) {
     const file = selectedFiles[i];
-    const path = `complaints/${pendingSubmission.complaint.id}/${crypto.randomUUID()}.${extensions[file.type]}`;
-    const { error } = await supabaseClient.storage.from('complaint-attachments')
+    const path = `complaints/${pendingSubmission.complaint.id}/${generateUUIDv4()}.${extensions[file.type]}`;
+    const { error } = await supabaseClient.storage.from('complaints-attachments')
       .upload(path, file, { contentType: file.type, upsert: false });
     if (error) throw error;
     // Guardamos una ruta privada; solamente un administrador podrá generar una URL temporal.
@@ -268,6 +272,24 @@ async function uploadFiles() {
 }
 
 // ---- UTILIDADES ----
+function generateUUIDv4() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
 function setLoading(loading) {
   submitting = loading;
   // Tras una respuesta incierta, mantener el contenido evita reintentar con datos diferentes.
