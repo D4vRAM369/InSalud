@@ -19,5 +19,5 @@ jobs:
           node tests/form.test.cjs
           node tests/routing.test.cjs
           node tests/listado.test.cjs
-          node tests/admin.test.cjs
+          if [ -f admin/index.html ]; then node tests/admin.test.cjs; fi
           node tests/backend-webhook.test.cjs

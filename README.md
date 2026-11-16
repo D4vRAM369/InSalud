@@ -29,7 +29,6 @@ Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Can
 ```text
 ├── index.html                  # Formulario ciudadano + flujo de tramitación oficial
 ├── listado.html                # Listado público de reclamaciones aprobadas
-├── admin/index.html            # Panel privado de moderación (Supabase Auth + RBAC)
 ├── css/styles.css              # Estilos mobile-first
 ├── js/
 │   ├── app.js                  # Validación, subida de adjuntos y borrador formal local

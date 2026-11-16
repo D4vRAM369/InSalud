@@ -29,3 +29,7 @@ Thumbs.db
 # Supabase CLI temp y notas internas
 supabase/.temp/
 HANDOFF.md
+ROADMAP.md
+SPEC.md
+CODEX.md
+admin/
