@@ -26,3 +26,6 @@ Thumbs.db
 .omx/
 
 
+# Supabase CLI temp y notas internas
+supabase/.temp/
+HANDOFF.md

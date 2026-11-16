@@ -7,6 +7,7 @@
 let selectedFiles = [];
 let submitting = false;
 let pendingSubmission = null;
+let lastSubmittedDraftData = null;
 
 // ---- ELEMENTOS DEL DOM ----
 const form = document.getElementById('complaintForm');
@@ -195,7 +196,19 @@ function initFormSubmit() {
     setLoading(true);
     hideError();
     try {
-      const complaint = { center, category, incident_date: incidentDate, description, email };
+      const draftContext = collectLocalDraftContext();
+      const route = resolveCurrentRoute(draftContext);
+      const complaint = {
+        center,
+        category,
+        incident_date: incidentDate,
+        description,
+        email,
+        requested_measures: draftContext.requestedMeasures,
+        prior_complaint_status: draftContext.priorComplaintStatus,
+        has_physical_harm: draftContext.hasPhysicalHarm,
+        routed_procedure: route.primary.id || 'scs_3831'
+      };
       const signature = JSON.stringify([complaint, selectedFiles.map(file => [file.name, file.size, file.type, file.lastModified])]);
       // Reutilizar la identidad evita duplicados si el servidor guardó pero se perdió su respuesta.
       if (!pendingSubmission || (!pendingSubmission.attempted && pendingSubmission.signature !== signature)) {
@@ -209,6 +222,8 @@ function initFormSubmit() {
       });
       if (error) throw error;
       if (data !== pendingSubmission.complaint.id) throw new Error('Confirmación inválida');
+      lastSubmittedDraftData = collectLocalDraftContext();
+      renderOfficialRoutePanel(lastSubmittedDraftData);
       pendingSubmission = null;
       form.style.display = 'none';
       successMessage.style.display = 'block';
@@ -264,36 +279,116 @@ function hideError() {
   errorMessage.style.display = 'none';
 }
 
+function collectLocalDraftContext() {
+  const checkedMeasures = [];
+  if (typeof document.querySelectorAll === 'function') {
+    document.querySelectorAll('input[name="requestedMeasure"]:checked').forEach(el => {
+      if (el && el.value) checkedMeasures.push(el.value);
+    });
+  }
+  const customMeasureEl = document.getElementById('customMeasure');
+  const customMeasure = customMeasureEl && customMeasureEl.value ? customMeasureEl.value.trim() : '';
+  if (customMeasure) checkedMeasures.push(customMeasure);
+
+  const priorEl = document.getElementById('priorComplaintStatus');
+  const harmEl = document.getElementById('hasPhysicalHarm');
+  return {
+    center: document.getElementById('center').value || 'Centro no especificado',
+    category: document.getElementById('category').value || 'Categoría no especificada',
+    incidentDate: document.getElementById('incidentDate').value || 'Fecha no especificada',
+    description: document.getElementById('description').value || '',
+    requestedMeasures: checkedMeasures,
+    priorComplaintStatus: priorEl && priorEl.value ? priorEl.value : 'none',
+    hasPhysicalHarm: Boolean(harmEl && harmEl.checked)
+  };
+}
+
+function getDraftPayload() {
+  const base = lastSubmittedDraftData || collectLocalDraftContext();
+  const nameEl = document.getElementById('localName');
+  const dniEl = document.getElementById('localDni');
+  return {
+    ...base,
+    claimantName: nameEl && nameEl.value ? nameEl.value.trim() : '',
+    claimantDni: dniEl && dniEl.value ? dniEl.value.trim() : ''
+  };
+}
+
+function resolveCurrentRoute(payload) {
+  if (typeof InSaludRouting !== 'undefined' && InSaludRouting.resolveComplaintRoute) {
+    return InSaludRouting.resolveComplaintRoute(payload);
+  }
+  return {
+    primary: {
+      name: 'Servicio Canario de la Salud (SCS) / ODDUS — Reclamación Sanitaria',
+      procedureCode: 'Trámite 3831',
+      url: 'https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/3831',
+      deadline: 'Plazo máximo legal de respuesta: 2 meses (Decreto 8/2025).'
+    },
+    secondaryChannels: []
+  };
+}
+
+function renderOfficialRoutePanel(payload) {
+  const route = resolveCurrentRoute(payload);
+  const summaryEl = document.getElementById('routeSummary');
+  const linkEl = document.getElementById('officialRouteLink');
+  const secondaryEl = document.getElementById('secondaryRoutes');
+
+  if (summaryEl) {
+    summaryEl.textContent = `Ruta recomendada: ${route.primary.name} (${route.primary.procedureCode}). ${route.primary.deadline} InSalud no recopila tu DNI ni Cl@ve: solo te redirige al portal oficial.`;
+  }
+  if (linkEl) {
+    linkEl.href = route.primary.url;
+    linkEl.textContent = `Ir a ${route.primary.procedureCode} (Cl@ve / Certificado) \u2197`;
+  }
+  if (secondaryEl && typeof secondaryEl.replaceChildren === 'function') {
+    const items = [];
+    if (route.secondaryChannels.length > 0) {
+      const title = document.createElement('p');
+      title.className = 'small-hint';
+      title.textContent = 'Canales adicionales según tu caso:';
+      items.push(title);
+
+      route.secondaryChannels.forEach(ch => {
+        const a = document.createElement('a');
+        a.href = ch.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'secondary-route-link';
+        a.textContent = `${ch.name} (${ch.procedureCode})`;
+        items.push(a);
+      });
+    }
+    secondaryEl.replaceChildren(...items);
+  }
+}
+
+function buildFormalText(payload) {
+  const route = resolveCurrentRoute(payload);
+  if (typeof InSaludRouting !== 'undefined' && InSaludRouting.buildFormalComplaintText) {
+    return InSaludRouting.buildFormalComplaintText({ ...payload, route });
+  }
+  return `ESCRITO DE RECLAMACIÓN / QUEJA FORMAL\nCentro: ${payload.center}\nCategoría: ${payload.category}\nFecha: ${payload.incidentDate}\n\nEXPONE:\n${payload.description}\n`;
+}
+
+async function copyFormalDraft() {
+  const payload = getDraftPayload();
+  const text = buildFormalText(payload);
+  const feedbackEl = document.getElementById('copyFeedback');
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      if (feedbackEl) feedbackEl.style.display = 'block';
+    }
+  } catch (_) {
+    showError('No se pudo copiar automáticamente. Usa el botón de descargar borrador.');
+  }
+}
+
 function generateFormalDraft() {
-  const center = document.getElementById('center').value || 'Centro no especificado';
-  const category = document.getElementById('category').value || 'Categoría no especificada';
-  const date = document.getElementById('incident_date').value || 'Fecha no especificada';
-  const description = document.getElementById('description').value || '';
-
-  const draftText = `ESCRITO DE RECLAMACIÓN / QUEJA FORMAL
---------------------------------------------------
-A LA DIRECCIÓN GERENCIA / SERVICIO DE ATENCIÓN AL PACIENTE
-DEL SERVICIO CANARIO DE SALUD (SCS) / DIPUTADO DEL COMÚN
-
-DATOS DEL CENTRO AFECTADO:
-- Centro / Hospital: ${center}
-- Categoría del problema: ${category}
-- Fecha de la incidencia: ${date}
-
-EXPONE:
-Que el/la abajo firmante (o en representación de paciente afectado), formula reclamación formal en relación con los hechos acaecidos en el centro indicado, manifestando lo siguiente:
-
-${description}
-
-SOLICITA:
-1. Se admita a trámite el presente escrito y se investiguen los hechos expuestos.
-2. Se adopten las medidas correctoras necesarias para evitar que situaciones similares vuelvan a repetirse.
-3. Se de respuesta por escrito a la presente reclamación en los plazos legalmente establecidos.
-
-En Gran Canaria, a ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}.
-
-Firma: ___________________________
-`;
+  const payload = getDraftPayload();
+  const draftText = buildFormalText(payload);
 
   const blob = new Blob([draftText], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -309,11 +404,14 @@ Firma: ___________________________
 function resetForm() {
   if (submitting) return;
   pendingSubmission = null;
+  lastSubmittedDraftData = null;
   setLoading(false);
   form.reset();
   form.style.display = 'block';
   successMessage.style.display = 'none';
   errorMessage.style.display = 'none';
+  const feedbackEl = document.getElementById('copyFeedback');
+  if (feedbackEl) feedbackEl.style.display = 'none';
   selectedFiles = [];
   renderFileList();
   charCount.textContent = '0';

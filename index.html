@@ -149,6 +149,51 @@
           <span class="char-count"><span id="charCount">0</span> / 2000</span>
         </div>
 
+        <!-- Medidas concretas solicitadas -->
+        <div class="form-group">
+          <label>¿Qué medidas concretas solicitas? <span class="help-inline">(Evita respuestas tipo "gracias y lo sentimos")</span></label>
+          <div class="measures-grid">
+            <label class="measure-option">
+              <input type="checkbox" name="requestedMeasure" value="Respuesta escrita motivada punto por punto dentro del plazo legal de 2 meses (Decreto 8/2025)." checked>
+              <span>Respuesta escrita motivada (Decreto 8/2025)</span>
+            </label>
+            <label class="measure-option">
+              <input type="checkbox" name="requestedMeasure" value="Apertura de expediente informativo / revisión por trato inadecuado o desatención del personal.">
+              <span>Expediente informativo por trato inadecuado</span>
+            </label>
+            <label class="measure-option">
+              <input type="checkbox" name="requestedMeasure" value="Reprogramación urgente de cita, prueba diagnóstica o derivación pendiente.">
+              <span>Cita o prueba diagnóstica urgente</span>
+            </label>
+            <label class="measure-option">
+              <input type="checkbox" name="requestedMeasure" value="Cambio de médico o especialista asignado por pérdida de confianza clínica.">
+              <span>Cambio de médico / especialista</span>
+            </label>
+          </div>
+          <input type="text" id="customMeasure" name="customMeasure" maxlength="300"
+            placeholder="Otra medida concreta que exiges (opcional)...">
+        </div>
+
+        <!-- Estado previo y gravedad para enrutamiento oficial -->
+        <div class="form-group">
+          <label for="priorComplaintStatus">¿Es tu primera reclamación por este caso?</label>
+          <select id="priorComplaintStatus" name="priorComplaintStatus">
+            <option value="none">Sí, es la primera reclamación oficial</option>
+            <option value="empty_response">No, ya reclamé y me respondieron con evasivas ("lo sentimos mucho")</option>
+            <option value="no_response_2m">No, ya reclamé hace más de 2 meses y no me han respondido</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="hasPhysicalHarm" name="hasPhysicalHarm">
+            <span class="checkmark"></span>
+            <span class="disclaimer-text">
+              Hubo <strong>daño físico, secuelas o presunta negligencia médica grave</strong> (activa derivación a Responsabilidad Patrimonial y El Defensor del Paciente).
+            </span>
+          </label>
+        </div>
+
         <!-- Email opcional -->
         <div class="form-group">
           <label for="email">Email (opcional)</label>
@@ -209,10 +254,26 @@
           </div>
           
           <div class="action-card formal-action">
-            <h4>Paso 2: Acción Formal (Recomendado)</h4>
-            <p>Para que la administración tenga la obligación legal de responderte, te recomendamos presentar una queja formal. Hemos preparado un borrador con tus datos para facilitarte el trámite.</p>
-            <button onclick="generateFormalDraft()" class="btn-accent">Descargar Borrador de Queja Formal</button>
-            <p class="small-hint">Puedes presentarlo en el registro del SCS o ante el Diputado del Común.</p>
+            <h4>Paso 2: Tramitación Oficial Sin Custodia (Cl@ve / DNIe / Certificado)</h4>
+            <p id="routeSummary">Hemos preparado tu escrito formal con las medidas solicitadas. InSalud no recopila tu DNI ni tu Cl@ve: solo te redirigimos a la web oficial para que firmes directamente.</p>
+
+            <div class="local-identity-box">
+              <p class="small-hint"><strong>Opcional (solo en tu navegador, nunca se envía a InSalud):</strong> añade tus datos para rellenar el borrador descargable.</p>
+              <div class="local-identity-fields">
+                <input type="text" id="localName" placeholder="Nombre y apellidos (solo local)" autocomplete="off">
+                <input type="text" id="localDni" placeholder="DNI / NIE (solo local)" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="formal-buttons">
+              <button type="button" id="copyDraftBtn" onclick="copyFormalDraft()" class="btn-secondary">Copiar Escrito para Sede Electrónica</button>
+              <button type="button" onclick="generateFormalDraft()" class="btn-accent">Descargar Borrador Formal (.txt)</button>
+              <a id="officialRouteLink" href="https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/3831" target="_blank" rel="noopener noreferrer" class="btn-submit btn-official-link">
+                Ir al Trámite Oficial (Cl@ve / Certificado) &#8599;
+              </a>
+            </div>
+            <p id="copyFeedback" class="small-hint" style="display:none; color:#1B5E20; font-weight:600;">Escrito copiado al portapapeles. Pégalo en la Sede Electrónica y adjunta tus documentos.</p>
+            <div id="secondaryRoutes" class="secondary-routes"></div>
           </div>
         </div>
 
@@ -249,6 +310,7 @@
   <!-- SCRIPTS -->
   <script src="https://unpkg.com/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/routing-engine.js"></script>
   <script src="js/app.js"></script>
 
 </body>
