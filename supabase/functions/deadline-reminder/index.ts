@@ -5,7 +5,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1';
 
-const ODDUS_DISCONFORMIDAD_URL = 'https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/3832';
+const ODDUS_DISCONFORMIDAD_URL = 'https://sede.gobiernodecanarias.org/sede/tramites/6465';
 const DIPUTADO_COMUN_URL = 'https://www.diputadodelcomun.com';
 
 function constantTimeEqual(a: string, b: string): boolean {
@@ -33,7 +33,7 @@ Según el Decreto 8/2025 del Gobierno de Canarias, la administración dispone de
 
 ¿Qué hacer ahora?
 1. Si NO te han respondido en estos 2 meses, o te han dado una respuesta genérica tipo "gracias y lo sentimos mucho":
-   Presenta un Escrito de Disconformidad ante la ODDUS en el plazo de 1 mes (Trámite 3832):
+   Presenta un Escrito de Disconformidad ante la ODDUS en el plazo de 1 mes (Trámite 6465):
    ${ODDUS_DISCONFORMIDAD_URL}
 
 2. Si persiste el silencio o la inacción administrativa, puedes elevar queja al Diputado del Común:

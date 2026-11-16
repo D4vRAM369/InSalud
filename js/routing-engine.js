@@ -13,18 +13,20 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const OFFICIAL_CHANNELS = {
     SCS_RECLAMACION: {
-      id: 'scs_3831',
-      name: 'Servicio Canario de la Salud (SCS) / ODDUS — Reclamación Sanitaria',
-      procedureCode: 'Trámite 3831',
-      url: 'https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/3831',
+      id: 'scs_1768',
+      dbCode: 'scs_3831',
+      name: 'Servicio Canario de la Salud (SCS) / ODDUS — Reclamación en el ámbito sanitario',
+      procedureCode: 'Trámite 1768',
+      url: 'https://sede.gobiernodecanarias.org/sede/tramites/1768',
       deadline: 'Plazo máximo legal de respuesta: 2 meses (Decreto 8/2025).',
       authMethod: 'Cl@ve, DNIe o Certificado Digital en Sede Electrónica oficial.'
     },
     ODDUS_DISCONFORMIDAD: {
-      id: 'oddus_3832',
-      name: 'ODDUS (Oficina de Defensa de los Derechos de las Personas Usuarias Sanitarias) — Disconformidad',
-      procedureCode: 'Trámite 3832',
-      url: 'https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/3832',
+      id: 'oddus_6465',
+      dbCode: 'oddus_3832',
+      name: 'ODDUS (Oficina de Defensa de los Derechos de las Personas Usuarias Sanitarias) — Disconformidades',
+      procedureCode: 'Trámite 6465',
+      url: 'https://sede.gobiernodecanarias.org/sede/tramites/6465',
       address: 'Av. Juan XXIII, 17, 35004 Las Palmas de Gran Canaria',
       phones: '928 11 88 51 / 928 11 88 70',
       email: 'oddus.sanidad@gobiernodecanarias.org',
@@ -33,9 +35,10 @@
     },
     SCS_RESPONSABILIDAD_PATRIMONIAL: {
       id: 'scs_1817',
+      dbCode: 'scs_1817',
       name: 'SCS / Consejería de Sanidad — Responsabilidad Patrimonial',
       procedureCode: 'Trámite 1817',
-      url: 'https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/1817',
+      url: 'https://sede.gobiernodecanarias.org/sede/tramites/1817',
       deadline: 'Procedimiento específico para indemnización por daños o secuelas asistenciales.',
       authMethod: 'Cl@ve, DNIe o Certificado Digital en Sede Electrónica oficial.'
     },

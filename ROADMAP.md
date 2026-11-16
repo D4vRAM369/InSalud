@@ -32,8 +32,8 @@
   - [x] Corregir bug en `js/app.js` (`incident_date` -> `incidentDate` en `generateFormalDraft()`).
   - [x] Añadir al formulario bloque de **Medidas Concretas Solicitadas** (expediente informativo, cambio de especialista, cita urgente, respuesta motivada) y pregunta de **Reclamación previa / Disconformidad**.
   - [x] Crear motor puro `js/routing-engine.js` con tests unitarios (`tests/routing.test.cjs`) para enrutar automáticamente a:
-    - **SCS / ODDUS — Reclamación ordinaria** (Sede Electrónica Trámite `3831`, plazo 2 meses).
-    - **ODDUS — Escrito de Disconformidad** (Sede Electrónica Trámite `3832`, plazo 1 mes desde respuesta insatisfactoria o silencio).
+    - **SCS / ODDUS — Reclamación ordinaria** (Sede Electrónica Trámite `1768`, plazo 2 meses).
+    - **ODDUS — Escrito de Disconformidad** (Sede Electrónica Trámite `6465`, plazo 1 mes desde respuesta insatisfactoria o silencio).
     - **SCS — Responsabilidad Patrimonial** (Sede Electrónica Trámite `1817`).
     - **Asociación El Defensor del Paciente** (`negligenciasmedicas.com` / `defensorpaciente@telefonica.net`, para negligencias médicas, secuelas o listas de espera graves).
     - **Diputado del Común** (`diputadodelcomun.com`).

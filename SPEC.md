@@ -36,8 +36,8 @@ InSalud es una plataforma de **Civic Tech** con arquitectura Serverless y BaaS (
 3. **Pipeline de Defensa del Paciente (Fase 4 — En diseño):**
    - **Etapa 1 (Captura Dual):** Hechos + Medidas concretas solicitadas + Indicador de reclamación previa.
    - **Etapa 2 (Motor de Enrutamiento - Gran Canaria):** Clasificación automática según **Decreto 8/2025** hacia:
-     - Sede Electrónica Gob. de Canarias — **Trámite `3831`** (Reclamación sanitaria ordinaria, plazo de respuesta 2 meses).
-     - Sede Electrónica Gob. de Canarias — **Trámite `3832`** (Disconformidad ante la **ODDUS**, plazo 1 mes tras respuesta insatisfactoria o silencio).
+     - Sede Electrónica Gob. de Canarias — **Trámite `1768`** (Reclamación en el ámbito sanitario, plazo de respuesta 2 meses).
+     - Sede Electrónica Gob. de Canarias — **Trámite `6465`** (Disconformidades en el ámbito sanitario ante la **ODDUS**, plazo 1 mes tras respuesta insatisfactoria o silencio).
      - Sede Electrónica Gob. de Canarias — **Trámite `1817`** (Responsabilidad Patrimonial por daños).
      - **Asociación El Defensor del Paciente** (`https://www.negligenciasmedicas.com` / `defensorpaciente@telefonica.net`, teléfono `+34 910 55 19 42`, para valoración jurídica y denuncia de negligencias, diagnósticos tardíos o listas de espera graves en Canarias).
      - **Diputado del Común** (`https://www.diputadodelcomun.com`).

@@ -207,7 +207,7 @@ function initFormSubmit() {
         requested_measures: draftContext.requestedMeasures,
         prior_complaint_status: draftContext.priorComplaintStatus,
         has_physical_harm: draftContext.hasPhysicalHarm,
-        routed_procedure: route.primary.id || 'scs_3831'
+        routed_procedure: route.primary.dbCode || route.primary.id || 'scs_3831'
       };
       const signature = JSON.stringify([complaint, selectedFiles.map(file => [file.name, file.size, file.type, file.lastModified])]);
       // Reutilizar la identidad evita duplicados si el servidor guardó pero se perdió su respuesta.
@@ -320,9 +320,9 @@ function resolveCurrentRoute(payload) {
   }
   return {
     primary: {
-      name: 'Servicio Canario de la Salud (SCS) / ODDUS — Reclamación Sanitaria',
-      procedureCode: 'Trámite 3831',
-      url: 'https://sede.gobiernodecanarias.org/sede/procedimientos_servicios/tramites/3831',
+      name: 'Servicio Canario de la Salud (SCS) / ODDUS — Reclamación en el ámbito sanitario',
+      procedureCode: 'Trámite 1768',
+      url: 'https://sede.gobiernodecanarias.org/sede/tramites/1768',
       deadline: 'Plazo máximo legal de respuesta: 2 meses (Decreto 8/2025).'
     },
     secondaryChannels: []

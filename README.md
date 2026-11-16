@@ -10,8 +10,8 @@ Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Can
 - **Pipeline de Defensa del Paciente:**
   - **Medidas Concretas Solicitadas:** Permite exigir acciones específicas (respuesta motivada punto por punto, expediente informativo, cita urgente, cambio de facultativo) evitando respuestas genéricas.
   - **Motor de Enrutamiento Institucional (`js/routing-engine.js`):** Clasifica el caso y redirige según corresponda a:
-    - **SCS / ODDUS — Reclamación Sanitaria (`Trámite 3831`)**: Plazo máximo legal de 2 meses.
-    - **ODDUS — Escrito de Disconformidad (`Trámite 3832`)**: Para respuestas vacías o silencio tras 2 meses.
+    - **SCS / ODDUS — Reclamación Sanitaria (`Trámite 1768`)**: Plazo máximo legal de 2 meses.
+    - **ODDUS — Escrito de Disconformidad (`Trámite 6465`)**: Para respuestas vacías o silencio tras 2 meses.
     - **SCS — Responsabilidad Patrimonial (`Trámite 1817`)**: Daños o secuelas asistenciales.
     - **Asociación El Defensor del Paciente**: Valoración jurídica en negligencias, diagnósticos tardíos o listas de espera graves.
     - **Diputado del Común**: Defensor del Pueblo en Canarias.
