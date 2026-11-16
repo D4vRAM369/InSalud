@@ -4,7 +4,7 @@
 
 Plataforma **Civic Tech** orientada a visibilizar incidencias en el Servicio Canario de la Salud (SCS) en Gran Canaria y guiar al paciente hacia una **reclamación formal efectiva** bajo el **Decreto 8/2025** y la **Ley 39/2015**, sin recopilar nunca datos de identidad oficial.
 
-**Demo en producción:** [https://insalud-gc.vercel.app](https://insalud-lpgc.vercel.app)
+**Demo en producción:** [https://insalud-lpgc.vercel.app](https://insalud-lpgc.vercel.app)
 
 ---
 
