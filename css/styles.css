@@ -81,6 +81,15 @@ body {
   max-width: 500px;
 }
 
+/* === BANNER DE CABECERA === */
+.header-banner {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
 /* === BANNER INFORMATIVO === */
 .info-banner {
   background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
