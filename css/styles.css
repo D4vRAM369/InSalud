@@ -82,6 +82,17 @@ body {
 }
 
 /* === BANNER DE CABECERA === */
+.header-home {
+  display: block;
+  width: 100%;
+}
+
+.header-home:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+
 .header-banner {
   display: block;
   width: 100%;
